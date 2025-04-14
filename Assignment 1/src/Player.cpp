@@ -81,7 +81,7 @@ std::vector<Territory*> Player::toAttack() {
 
 // Adds order to player's list of orders (will probably have a parameter later)
 void Player::issueOrder() {
-	playerOrders->GetOrders().emplace_back(new Deploy{});
+	playerOrders->GetOrders().emplace_back(new Blockade{});
 }
 
 // Stream insertion operator

@@ -34,7 +34,7 @@ std::ostream& operator<<(std::ostream& os, const GameEngine& obj) {
 		case GameState::Issue_Orders: return os << "Issue Orders";
 		case GameState::Execute_Orders: return os << "Execute Orders";
 		case GameState::Win: return os << "Win";
-		default: return os << "None";
+		default: return os << "Error";
 	}
 }
 
@@ -45,7 +45,7 @@ GameState& GameEngine::GetGameState() const {
 
 // Starts and controls the game loop
 // Asks for command input, if it's valid depending on the state, it goes through.
-void GameEngine::GameLoop() {
+void GameEngine::GameUI() {
 	while (command != "end" || *gameState != GameState::Win) {
 		std::cout << "\nCurrent State: " << *this << std::endl;
 		std::cout << "Please enter a command: ";

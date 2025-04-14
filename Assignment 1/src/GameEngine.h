@@ -32,7 +32,7 @@ public:
 	GameState& GetGameState() const;
 
 	// Starts and controls the game loop
-	void GameLoop();
+	void GameUI();
 };
 
 #endif

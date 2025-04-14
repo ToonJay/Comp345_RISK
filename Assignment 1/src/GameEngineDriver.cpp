@@ -2,5 +2,5 @@
 
 void testGameStates() {
 	GameEngine gameEngine{};
-	gameEngine.GameLoop();
+	gameEngine.GameUI();
 }
