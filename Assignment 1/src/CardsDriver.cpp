@@ -15,7 +15,7 @@ void testCards() {
 
 	std::cout << "\n***Play 10 cards from hand***\n" << std::endl;
 	for (size_t i = 0; i < 10; i++) {
-		std::cout << hand.GetCards().at(10 - 1 - i)->play(hand, deck) << std::endl;
+		std::cout << hand.getCards().at(10 - 1 - i)->play(hand, deck) << std::endl;
 	}
 	
 	std::cout << "\n***After 10 plays***\n" << std::endl;

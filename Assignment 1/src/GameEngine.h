@@ -29,10 +29,10 @@ public:
 	friend std::ostream& operator<<(std::ostream& os, const GameEngine& obj);
 
 	// Getter
-	GameState& GetGameState() const;
+	GameState& getGameState() const;
 
 	// Starts and controls the game loop
-	void GameUI();
+	void gameUI();
 };
 
 #endif

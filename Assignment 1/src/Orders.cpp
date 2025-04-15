@@ -274,14 +274,14 @@ OrdersList& OrdersList::operator=(const OrdersList& rhs) {
 // Stream insertion operator overload
 std::ostream& operator<<(std::ostream& os, const OrdersList& obj) {
 	os << "Orders:" << std::endl;
-	for (const Order* o : obj.GetOrders()) {
+	for (const Order* o : obj.getOrders()) {
 		std::cout << *o << std::endl;
 	}
 	return os;
 }
 
 // Getter
-std::vector<Order*>& OrdersList::GetOrders() const {
+std::vector<Order*>& OrdersList::getOrders() const {
 	return *orders;
 }
 

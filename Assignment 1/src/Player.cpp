@@ -45,19 +45,19 @@ bool Player::operator==(const Player& rhs) const {
 }
 
 // Getters
-std::string& Player::GetPlayerName() const {
+std::string& Player::getPlayerName() const {
 	return *playerName;
 }
 
-std::vector<Territory*>& Player::GetPlayerTerritories() const {
+std::vector<Territory*>& Player::getPlayerTerritories() const {
 	return *playerTerritories;
 }
 
-Hand& Player::GetPlayerHand() const {
+Hand& Player::getPlayerHand() const {
 	return *playerHand;
 }
 
-OrdersList& Player::GetPlayerOrders() const {
+OrdersList& Player::getPlayerOrders() const {
 	return *playerOrders;
 }
 
@@ -81,7 +81,7 @@ std::vector<Territory*> Player::toAttack() {
 
 // Adds order to player's list of orders (will probably have a parameter later)
 void Player::issueOrder() {
-	playerOrders->GetOrders().emplace_back(new Blockade{});
+	playerOrders->getOrders().emplace_back(new Blockade{});
 }
 
 // Stream insertion operator
@@ -93,7 +93,7 @@ std::ostream& operator<<(std::ostream& os, const Player& obj) {
 		os << *t << std::endl;
 	}
 	os << "Orders List:" << std::endl;
-	for (const Order* o : obj.playerOrders->GetOrders()) {
+	for (const Order* o : obj.playerOrders->getOrders()) {
 		os << *o << std::endl;
 	}
 	return os;

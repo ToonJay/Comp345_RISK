@@ -36,10 +36,10 @@ public:
 	friend std::ostream& operator<<(std::ostream& os, const Player& obj);
 
 	// Getters
-	std::string& GetPlayerName() const;
-	std::vector<Territory*>& GetPlayerTerritories() const;
-	Hand& GetPlayerHand() const;
-	OrdersList& GetPlayerOrders() const;
+	std::string& getPlayerName() const;
+	std::vector<Territory*>& getPlayerTerritories() const;
+	Hand& getPlayerHand() const;
+	OrdersList& getPlayerOrders() const;
 
 	// Returns list of pointers of territories to defend
 	std::vector<Territory*> toDefend();

@@ -47,24 +47,24 @@ std::ostream& operator<<(std::ostream& os, const Territory& obj) {
 	return os;
 }
 
-// Getters and Setters
-std::string& Territory::GetName() const {
+// Getters and setters
+std::string& Territory::getName() const {
 	return *name;
 }
 
-int& Territory::GetNumOfArmies() const {
+int& Territory::getNumOfArmies() const {
 	return *numOfArmies;
 }
 
-std::string& Territory::GetOwner() const {
+std::string& Territory::getOwner() const {
 	return *owner;
 }
 
-void Territory::SetNumOfArmies(int& numOfArmies) {
+void Territory::setNumOfArmies(int& numOfArmies) {
 	*this->numOfArmies = numOfArmies;
 }
 
-void Territory::SetOwner(std::string& owner) {
+void Territory::setOwner(std::string& owner) {
 	*this->owner = owner;
 }
 
@@ -137,11 +137,11 @@ std::ostream& operator<<(std::ostream& os, const Map& obj) {
 }
 
 // Getters
-std::unordered_map<Territory, std::unordered_set<Territory>>& Map::GetMainMap() const {
+std::unordered_map<Territory, std::unordered_set<Territory>>& Map::getMainMap() const {
 	return *mainMap;
 }
 
-std::unordered_map<std::string, std::unordered_set<Territory>>& Map::GetContinents() const {
+std::unordered_map<std::string, std::unordered_set<Territory>>& Map::getContinents() const {
 	return *continents;
 }
 
@@ -291,8 +291,8 @@ MapLoader::MapLoader(std::string filepath)
 					t_edges.insert(t_e);
 				}
 
-				map->GetMainMap().insert(std::make_pair(t, t_edges));
-				map->GetContinents()[continent].insert(t);
+				map->getMainMap().insert(std::make_pair(t, t_edges));
+				map->getContinents()[continent].insert(t);
 			}
 			
 		}
@@ -304,10 +304,10 @@ MapLoader::MapLoader(std::string filepath)
 	in_file.close();
 	// notify of the continents that had no territories, but continue with the map since
 	// we can just remove them and maybe still have a valid map
-	if (continents.size() != map->GetContinents().size()) {
+	if (continents.size() != map->getContinents().size()) {
 		std::cerr << "The following continents were removed since no territories were assigned to them: " << std::endl;
 		for (const std::string& c : continents) {
-			if (map->GetContinents().find(c) == map->GetContinents().end()) {
+			if (map->getContinents().find(c) == map->getContinents().end()) {
 				std::cerr << c << std::endl;
 			}
 		}
@@ -316,12 +316,12 @@ MapLoader::MapLoader(std::string filepath)
 	// Only validate map if it's valide, otherwise, delete the data
 	if (isValid) {
 		if (!map->validate()) {
-			map->GetContinents().clear();
-			map->GetMainMap().clear();
+			map->getContinents().clear();
+			map->getMainMap().clear();
 		}
 	} else {
-		map->GetContinents().clear();
-		map->GetMainMap().clear();
+		map->getContinents().clear();
+		map->getMainMap().clear();
 	}
 }
 
@@ -346,11 +346,11 @@ MapLoader& MapLoader::operator=(const MapLoader& rhs) {
 
 // stream insertion operator, just inserts the map object into the stream
 std::ostream& operator<<(std::ostream& os, const MapLoader& obj) {
-	os << obj.GetMap();
+	os << obj.getMap();
 	return os;
 }
 
 // Getter
-Map& MapLoader::GetMap() const {
+Map& MapLoader::getMap() const {
 	return *map;
 }

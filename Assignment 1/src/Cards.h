@@ -33,7 +33,7 @@ public:
 	friend std::ostream& operator<<(std::ostream& os, const Card& obj);
 
 	// Getter
-	CardType& GetCardType() const;
+	CardType& getCardType() const;
 
 	// Creates special order and adds it to player's list of orders
 	Card& play(Hand& Hand , Deck& deck);
@@ -62,7 +62,7 @@ public:
 	friend std::ostream& operator<<(std::ostream& os, const Hand& obj);
 
 	// Getter
-	std::vector<Card*>& GetCards() const;
+	std::vector<Card*>& getCards() const;
 };
 
 /*
@@ -89,7 +89,7 @@ public:
 	friend std::ostream& operator<<(std::ostream& os, const Deck& obj);
 
 	// Getter
-	std::vector<Card*>& GetCards() const;
+	std::vector<Card*>& getCards() const;
 
 	// Removes card from deck and adds it to a player's hand
 	void draw(Hand& hand);

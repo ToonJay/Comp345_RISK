@@ -39,13 +39,13 @@ std::ostream& operator<<(std::ostream& os, const GameEngine& obj) {
 }
 
 // Getter
-GameState& GameEngine::GetGameState() const {
+GameState& GameEngine::getGameState() const {
 	return *gameState;
 }
 
 // Starts and controls the game loop
 // Asks for command input, if it's valid depending on the state, it goes through.
-void GameEngine::GameUI() {
+void GameEngine::gameUI() {
 	while (command != "end" || *gameState != GameState::Win) {
 		std::cout << "\nCurrent State: " << *this << std::endl;
 		std::cout << "Please enter a command: ";

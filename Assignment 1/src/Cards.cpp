@@ -48,15 +48,15 @@ std::ostream& operator<<(std::ostream& os, const Card& obj) {
 }
 
 // Getter
-CardType& Card::GetCardType() const {
+CardType& Card::getCardType() const {
 	return *cardType;
 };
 
 // Creates special order and adds it to player's list of orders
 // Removes card from hand and places it back in deck
 Card& Card::play(Hand& hand, Deck& deck) {
-	deck.GetCards().push_back(this);
-	hand.GetCards().erase(std::find(hand.GetCards().begin(), hand.GetCards().end(), this));
+	deck.getCards().push_back(this);
+	hand.getCards().erase(std::find(hand.getCards().begin(), hand.getCards().end(), this));
 	return *this;
 }
 
@@ -95,14 +95,14 @@ Hand& Hand::operator=(const Hand& rhs) {
 // Stream insertion operator overload
 std::ostream& operator<<(std::ostream& os, const Hand& obj) {
 	os << "Hand's cards:" << std::endl;
-	for (const Card* c : obj.GetCards()) {
+	for (const Card* c : obj.getCards()) {
 		std::cout << *c << std::endl;
 	}
 	return os;
 }
 
 // Getter
-std::vector<Card*>& Hand::GetCards() const {
+std::vector<Card*>& Hand::getCards() const {
 	return *cards;
 }
 
@@ -150,19 +150,19 @@ Deck& Deck::operator=(const Deck& rhs) {
 // Stream insertion operator overload
 std::ostream& operator<<(std::ostream& os, const Deck& obj) {
 	os << "Deck's cards:" << std::endl;
-	for (const Card* c : obj.GetCards()) {
+	for (const Card* c : obj.getCards()) {
 		std::cout << *c << std::endl;
 	}
 	return os;
 }
 
 // Getter
-std::vector<Card*>& Deck::GetCards() const {
+std::vector<Card*>& Deck::getCards() const {
 	return *cards;
 }
 
 // Removes card from deck and adds it to a player's hand
 void Deck::draw(Hand& Hand) {
-	Hand.GetCards().push_back(*cards->begin());
+	Hand.getCards().push_back(*cards->begin());
 	cards->erase(cards->begin());
 }

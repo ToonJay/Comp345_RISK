@@ -157,7 +157,7 @@ public:
 	friend std::ostream& operator<<(std::ostream& os, const OrdersList& obj);
 
 	// Getter
-	std::vector<Order*>& GetOrders() const;
+	std::vector<Order*>& getOrders() const;
 
 	// Remove order from orders
 	void remove(int index);

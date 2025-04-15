@@ -37,12 +37,12 @@ public:
 	friend std::ostream& operator<<(std::ostream& os, const Territory& obj);
 
 	// Getters
-	std::string& GetName() const;
-	int& GetNumOfArmies() const;
-	std::string& GetOwner() const;
+	std::string& getName() const;
+	int& getNumOfArmies() const;
+	std::string& getOwner() const;
 	// Setters
-	void SetNumOfArmies(int& numOfArmies);
-	void SetOwner(std::string& owner);
+	void setNumOfArmies(int& numOfArmies);
+	void setOwner(std::string& owner);
 };
 
 /* 
@@ -75,8 +75,8 @@ public:
 	friend std::ostream& operator<<(std::ostream& os, const Map& obj);
 
 	// Getters (no setters needed for this class)
-	std::unordered_map<Territory, std::unordered_set<Territory>>& GetMainMap() const;
-	std::unordered_map<std::string, std::unordered_set<Territory>>& GetContinents() const;
+	std::unordered_map<Territory, std::unordered_set<Territory>>& getMainMap() const;
+	std::unordered_map<std::string, std::unordered_set<Territory>>& getContinents() const;
 
 	// Validation function to see whether or not the game map is valid
 	bool validate();
@@ -112,7 +112,7 @@ public:
 	friend std::ostream& operator<<(std::ostream& os, const MapLoader& obj);
 
 	// Getter
-	Map& GetMap() const;
+	Map& getMap() const;
 };
 
 // Custom specialization of std::hash injected in namespace std
@@ -122,7 +122,7 @@ struct std::hash<Territory>
 {
 	std::size_t operator()(const Territory& t) const noexcept
 	{
-		std::size_t h1 = std::hash<std::string>{}(t.GetName());
+		std::size_t h1 = std::hash<std::string>{}(t.getName());
 		return h1;
 	}
 };
