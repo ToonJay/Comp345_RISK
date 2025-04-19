@@ -25,7 +25,7 @@ GameEngine& GameEngine::operator=(const GameEngine& rhs) {
 
 // Stream insertion operator overload
 std::ostream& operator<<(std::ostream& os, const GameEngine& obj) {
-	switch (*obj.gameState) {
+	switch (obj.getGameState()) {
 		case GameState::Start: return os << "Start";
 		case GameState::Map_Loaded: return os << "Map Loaded";
 		case GameState::Map_Validated: return os << "Map Validated";

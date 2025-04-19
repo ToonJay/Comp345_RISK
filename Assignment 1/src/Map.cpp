@@ -43,7 +43,7 @@ bool Territory::operator==(const Territory& rhs) const {
 
 // Stream insertion operator overload
 std::ostream& operator<<(std::ostream& os, const Territory& obj) {
-	os << *obj.name;
+	os << obj.getName();
 	return os;
 }
 
@@ -112,9 +112,9 @@ Map& Map::operator=(const Map& rhs) {
 
 // Stream insertion operator overload
 std::ostream& operator<<(std::ostream& os, const Map& obj) {
-	if (!obj.mainMap->empty()) {
+	if (!obj.getMainMap().empty()) {
 		os << "[Territories]" << std::endl;
-		for (const auto& territory : *obj.mainMap) {
+		for (const auto& territory : obj.getMainMap()) {
 			os << territory.first << " : - ";
 			for (const auto& adjacent_territory : territory.second) {
 				os << adjacent_territory << " - ";
@@ -122,9 +122,9 @@ std::ostream& operator<<(std::ostream& os, const Map& obj) {
 			os << std::endl;
 		}
 	}
-	if (!obj.continents->empty()) {
+	if (!obj.getContinents().empty()) {
 		os << std::endl << "[Continents]" << std::endl;
-		for (const auto& continent : *obj.continents) {
+		for (const auto& continent : obj.getContinents()) {
 			os << continent.first << " : - ";
 			for (const auto& territory : continent.second) {
 				os << territory << " - ";
@@ -132,7 +132,6 @@ std::ostream& operator<<(std::ostream& os, const Map& obj) {
 			os << std::endl;
 		}
 	}
-	
 	return os;
 }
 

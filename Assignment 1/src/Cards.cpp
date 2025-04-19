@@ -37,7 +37,7 @@ bool Card::operator==(const Card& rhs) const
 
 // Stream insertion operator overload
 std::ostream& operator<<(std::ostream& os, const Card& obj) {
-	switch (*obj.cardType) {
+	switch (obj.getCardType()) {
 		case CardType::Bomb: return os << "Bomb";
 		case CardType::Reinforcement: return os << "Reinforcement";
 		case CardType::Blockade: return os << "Blockade";

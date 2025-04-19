@@ -6,18 +6,18 @@
 
 // Default constructor, allocates memory, but doesn't assign values
 Player::Player() 
-	: playerName{new std::string}, playerTerritories{new std::vector<Territory*>}, playerHand{new Hand}, playerOrders{new OrdersList} {
+	: playerName{new std::string}, playerTerritories{new std::vector<Territory*>}, playerHand{new Hand}, playerOrdersList{new OrdersList} {
 }
 
 // Parameterized constructor, only the playerName gets a value, the rest only get allocated memory
 Player::Player(std::string playerName) 
-	: playerName{new std::string{playerName}}, playerTerritories {new std::vector<Territory*>}, playerHand{new Hand}, playerOrders{new OrdersList} {
+	: playerName{new std::string{playerName}}, playerTerritories {new std::vector<Territory*>}, playerHand{new Hand}, playerOrdersList{new OrdersList} {
 }
 
 // Copy constructor
 Player::Player(const Player& source) 
 	: playerName{new std::string{*source.playerName}}, playerTerritories{new std::vector<Territory*>{*source.playerTerritories}},
-	playerHand{new Hand{*source.playerHand}}, playerOrders{new OrdersList{*source.playerOrders}} {
+	playerHand{new Hand{*source.playerHand}}, playerOrdersList{new OrdersList{*source.playerOrdersList}} {
 }
 
 // Destructor, deallocate memory for all the pointer data members
@@ -25,7 +25,7 @@ Player::~Player() {
 	delete playerName;
 	delete playerTerritories;
 	delete playerHand;
-	delete playerOrders;
+	delete playerOrdersList;
 }
 
 // Copy assignment operator
@@ -34,7 +34,7 @@ Player& Player::operator=(const Player& rhs) {
 		*playerName = *rhs.playerName;
 		*playerTerritories = *rhs.playerTerritories;
 		*playerHand = *rhs.playerHand;
-		*playerOrders = *rhs.playerOrders;
+		*playerOrdersList = *rhs.playerOrdersList;
 	}
 	return *this;
 }
@@ -57,8 +57,8 @@ Hand& Player::getPlayerHand() const {
 	return *playerHand;
 }
 
-OrdersList& Player::getPlayerOrders() const {
-	return *playerOrders;
+OrdersList& Player::getPlayerOrdersList() const {
+	return *playerOrdersList;
 }
 
 // For now, returns an arbitrary list of pointers of territories to defend
@@ -81,19 +81,19 @@ std::vector<Territory*> Player::toAttack() {
 
 // Adds order to player's list of orders (will probably have a parameter later)
 void Player::issueOrder() {
-	playerOrders->getOrders().emplace_back(new Blockade{});
+	playerOrdersList->getOrders().emplace_back(new Blockade{});
 }
 
 // Stream insertion operator
 std::ostream& operator<<(std::ostream& os, const Player& obj) {
 	os << "[Player]" << std::endl;
-	os << "Name: " << *obj.playerName << std::endl;
+	os << "Name: " << obj.getPlayerName() << std::endl;
 	os << "Owned Territories:" << std::endl;
-	for (const Territory* t : *obj.playerTerritories) {
+	for (const Territory* t : obj.getPlayerTerritories()) {
 		os << *t << std::endl;
 	}
 	os << "Orders List:" << std::endl;
-	for (const Order* o : obj.playerOrders->getOrders()) {
+	for (const Order* o : obj.getPlayerOrdersList().getOrders()) {
 		os << *o << std::endl;
 	}
 	return os;

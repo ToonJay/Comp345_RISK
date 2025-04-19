@@ -15,7 +15,7 @@ private:
 	std::string* playerName;
 	std::vector<Territory*>* playerTerritories;
 	Hand* playerHand;
-	OrdersList* playerOrders;
+	OrdersList* playerOrdersList;
 public:
 	// Constructors
 	// Default constructor
@@ -39,7 +39,7 @@ public:
 	std::string& getPlayerName() const;
 	std::vector<Territory*>& getPlayerTerritories() const;
 	Hand& getPlayerHand() const;
-	OrdersList& getPlayerOrders() const;
+	OrdersList& getPlayerOrdersList() const;
 
 	// Returns list of pointers of territories to defend
 	std::vector<Territory*> toDefend();
