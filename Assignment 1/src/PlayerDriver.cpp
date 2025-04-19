@@ -11,9 +11,9 @@ void testPlayers() {
 	player.issueOrder();
 	player.issueOrder();
 	player.issueOrder();
-	player.getPlayerOrders().getOrders().at(0)->execute();
-	player.getPlayerOrders().getOrders().at(1)->execute();
-	player.getPlayerOrders().getOrders().at(2)->execute();
+	player.getPlayerOrdersList().getOrders().at(0)->execute();
+	player.getPlayerOrdersList().getOrders().at(1)->execute();
+	player.getPlayerOrdersList().getOrders().at(2)->execute();
 	player.getPlayerHand().getCards().emplace_back(new Card(CardType::Bomb));
 	player.getPlayerHand().getCards().emplace_back(new Card(CardType::Blockade));
 	player.getPlayerHand().getCards().emplace_back(new Card(CardType::Airlift));
