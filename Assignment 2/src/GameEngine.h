@@ -2,8 +2,9 @@
 #define _GAMEENGINE_H_
 #include <iostream>
 #include <string>
+#include "CommandProcessing.h"
 
-enum class GameState {Start, Map_Loaded, Map_Validated, Players_Added, Assign_Reinforcement, Issue_Orders, Execute_Orders, Win};
+enum class GameState {Start, Map_Loaded, Map_Validated, Players_Added, Assign_Reinforcement, Issue_Orders, Execute_Orders, Win, Exit_Program};
 
 /*
 * GameEngine class
@@ -12,7 +13,7 @@ enum class GameState {Start, Map_Loaded, Map_Validated, Players_Added, Assign_Re
 class GameEngine {
 private:
 	GameState* gameState;
-	std::string command;
+	CommandProcessor* cmdProcessor;
 public:
 	// Constructors
 	// Default constructor

@@ -3,6 +3,7 @@
 #include <iostream>
 #include <string>
 #include <list>
+#include <fstream>
 
 enum class GameState;
 
@@ -44,7 +45,10 @@ public:
 class CommandProcessor {
 private:
 	std::list<Command>* commandList;
-	void readCommand();
+	// read command from console and store into a string
+	virtual void readCommand();
+protected:
+	// save command as a Command object
 	void saveCommand(std::string& command);
 public:
 	// Constructors
@@ -53,7 +57,7 @@ public:
 	// Copy constructor
 	CommandProcessor(const CommandProcessor& source);
 	// Destructor
-	~CommandProcessor();
+	virtual ~CommandProcessor();
 
 	// Operator overloads
 	// Copy assignment operator overload
@@ -61,12 +65,77 @@ public:
 	// Stream insertion operator overload
 	friend std::ostream& operator<<(std::ostream& os, const CommandProcessor& obj);
 
-	// Getters
+	// Getter
 	std::list<Command>& getCommandList() const;
-	Command& getCommand() const;
+
+	// Creates, stores and returns Command object
+	Command& getCommand();
 
 	// Validates whether or not a command is valid during the current game state
-	bool validate(const Command& command, GameState& gameState) const;
+	void validate(Command& command, GameState& gameState) const;
+};
+
+/*
+* FileLineReader class
+* Opens a file and reads lines from it
+* Stores the file name, file input stream, and the most recently read line
+*/
+class FileLineReader {
+private:
+	std::string* fileName;
+	std::ifstream* file;
+	std::string* line;
+public:
+	// Constructors
+	// Parameterized constructor
+	FileLineReader(std::string fileName);
+	// Copy constructor
+	FileLineReader(const FileLineReader& source);
+	// Destructor
+	~FileLineReader();
+
+	// Operator overloads
+	// Copy assignment operator overload
+	FileLineReader& operator=(const FileLineReader& rhs);
+	// Stream insertion overpeator overload
+	friend std::ostream& operator<<(std::ostream& os, const FileLineReader& obj);
+
+	// Getters
+	std::string& getFileName() const;
+	std::ifstream& getFile() const;
+	std::string& getLine() const;
+
+	// read line from file
+	void readLineFromFile();
+};
+
+/*
+* FileCommandProcessorAdapter class
+* Allows for commands to be read from a text file instead of on console
+* Inherits from CommandProcessor and contains/uses a FileLineReader
+*/
+class FileCommandProcessorAdapter : public CommandProcessor {
+private:
+	FileLineReader* flr;
+	// read command from file
+	virtual void readCommand() override;
+public:
+	// Constructors
+	// Parameterized constructor
+	FileCommandProcessorAdapter(std::string file);
+	// Copy constructor
+	FileCommandProcessorAdapter(const FileCommandProcessorAdapter& source);
+	// Destructor
+	virtual ~FileCommandProcessorAdapter();
+
+	// Operator overloads
+	// Copy assignment operator overload
+	FileCommandProcessorAdapter& operator=(const FileCommandProcessorAdapter& rhs);
+	// Stream insertion operator overload
+	friend std::ostream& operator<<(std::ostream& os, const FileCommandProcessorAdapter& obj);
+
+	// Getter
+	FileLineReader& getFileLineReader() const;
 };
 
 #endif

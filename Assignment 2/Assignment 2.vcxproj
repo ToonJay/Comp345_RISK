@@ -132,6 +132,7 @@
     <ClCompile Include="src\CommandProcessingDriver.cpp" />
     <ClCompile Include="src\GameEngine.cpp" />
     <ClCompile Include="src\GameEngineDriver.cpp" />
+    <ClCompile Include="src\MainDriver.cpp" />
     <ClCompile Include="src\Map.cpp" />
     <ClCompile Include="src\Orders.cpp" />
     <ClCompile Include="src\OrdersDriver.cpp" />

@@ -1,0 +1,15 @@
+loadmap <mapfile>
+validatemap
+addplayer <playername>
+addplayer <playername>
+gamestart
+issueorder
+issueorder
+endissueorders
+execorder
+execorder
+endexecorders
+issueorder
+endissueorders
+win
+quit

@@ -1,0 +1,18 @@
+loadmap <mapfile>
+doodoo
+validatemap
+addplayer <playername>
+addplayer <playername>
+gamestart
+issueorder
+issueorder
+endissueorders
+execorder
+execorder
+endexecorders
+issueorder
+endissueorders
+bigboy
+win
+ding
+quit
