@@ -31,10 +31,14 @@ Player::~Player() {
 // Copy assignment operator
 Player& Player::operator=(const Player& rhs) {
 	if (this != &rhs) {
-		*playerName = *rhs.playerName;
-		*playerTerritories = *rhs.playerTerritories;
-		*playerHand = *rhs.playerHand;
-		*playerOrdersList = *rhs.playerOrdersList;
+		delete playerName;
+		delete playerTerritories;
+		delete playerHand;
+		delete playerOrdersList;
+		playerName = new std::string{*rhs.playerName};
+		playerTerritories = new std::vector<Territory*>{*rhs.playerTerritories};
+		playerHand = new Hand{*rhs.playerHand};
+		playerOrdersList = new OrdersList{*rhs.playerOrdersList};
 	}
 	return *this;
 }

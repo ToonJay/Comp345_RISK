@@ -12,7 +12,6 @@ enum class GameState {Start, Map_Loaded, Map_Validated, Players_Added, Assign_Re
 class GameEngine {
 private:
 	GameState* gameState;
-	std::string command;
 public:
 	// Constructors
 	// Default constructor

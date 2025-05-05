@@ -24,14 +24,14 @@ Card::~Card() {
 // Copy assignment operator overload
 Card& Card::operator=(const Card& rhs) {
 	if (this != &rhs) {
-		*cardType = *rhs.cardType;
+		delete cardType;
+		cardType = new CardType{*rhs.cardType};
 	}
 	return *this;
 }
 
 // Equality operator overload
-bool Card::operator==(const Card& rhs) const
-{
+bool Card::operator==(const Card& rhs) const {
 	return this->cardType == rhs.cardType;
 }
 
@@ -87,7 +87,11 @@ Hand::~Hand() {
 // Copy assignment operator overload
 Hand& Hand::operator=(const Hand& rhs) {
 	if (this != &rhs) {
-		*cards = *rhs.cards;
+		for (const Card* c : *cards) {
+			delete c;
+		}
+		delete cards;
+		cards = new std::vector<Card*>{*rhs.cards};
 	}
 	return *this;
 }
@@ -142,7 +146,11 @@ Deck::~Deck() {
 // Copy assignment operator overload
 Deck& Deck::operator=(const Deck& rhs) {
 	if (this != &rhs) {
-		*cards = *rhs.cards;
+		for (const Card* c : *cards) {
+			delete c;
+		}
+		delete cards;
+		cards = new std::vector<Card*>{*rhs.cards};
 	}
 	return *this;
 }

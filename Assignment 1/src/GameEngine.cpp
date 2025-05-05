@@ -18,7 +18,8 @@ GameEngine::~GameEngine() {
 // Assignment operator overload
 GameEngine& GameEngine::operator=(const GameEngine& rhs) {
 	if (this != &rhs) {
-		*gameState = *rhs.gameState;
+		delete gameState;
+		gameState = new GameState{*rhs.gameState};
 	}
 	return *this;
 }
@@ -46,6 +47,7 @@ GameState& GameEngine::getGameState() const {
 // Starts and controls the game loop
 // Asks for command input, if it's valid depending on the state, it goes through.
 void GameEngine::gameUI() {
+	std::string command;
 	while (command != "end" || *gameState != GameState::Win) {
 		std::cout << "\nCurrent State: " << *this << std::endl;
 		std::cout << "Please enter a command: ";

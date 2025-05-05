@@ -19,7 +19,10 @@ GameEngine::~GameEngine() {
 // Assignment operator overload
 GameEngine& GameEngine::operator=(const GameEngine& rhs) {
 	if (this != &rhs) {
-		*gameState = *rhs.gameState;
+		delete gameState;
+		delete cmdProcessor;
+		gameState = new GameState{*rhs.gameState};
+		cmdProcessor = new CommandProcessor{*rhs.cmdProcessor};
 	}
 	return *this;
 }

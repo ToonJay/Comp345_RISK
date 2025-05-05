@@ -24,8 +24,10 @@ Order::~Order() {
 // Copy assignment operator overload
 Order& Order::operator=(const Order& rhs) {
 	if (this != &rhs) {
-		*orderDescription = *rhs.orderDescription;
-		*orderEffect = *rhs.orderEffect;
+		delete orderDescription;
+		delete orderEffect;
+		orderDescription = new std::string{*rhs.orderDescription};
+		orderEffect = new std::string{*rhs.orderEffect};
 	}
 	return *this;
 }
@@ -266,7 +268,11 @@ OrdersList::~OrdersList() {
 // Copy assignment operator overload
 OrdersList& OrdersList::operator=(const OrdersList& rhs) {
 	if (this != &rhs) {
-		*orders = *rhs.orders;
+		for (const Order* o : *orders) {
+			delete o;
+		}
+		delete orders;
+		orders = new std::vector<Order*>{*rhs.orders};
 	}
 	return *this;
 }

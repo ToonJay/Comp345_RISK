@@ -31,7 +31,12 @@ Territory::~Territory() {
 // Copy assignment operator overload
 Territory& Territory::operator=(const Territory& rhs) {
 	if (this != &rhs) {
-		*name = *rhs.name;
+		delete name;
+		delete numOfArmies;
+		delete owner;
+		name = new std::string{*rhs.name};
+		numOfArmies = new int{*rhs.numOfArmies};
+		owner = new std::string{*rhs.owner};
 	}
 	return *this;
 }
@@ -99,13 +104,21 @@ Map::Map(const Map& source)
 Map::~Map() {
 	delete mainMap;
 	delete continents;
+	delete isUndirected;
+	delete isValid;
 }
 
 // Copy assignment operator overload
 Map& Map::operator=(const Map& rhs) {
 	if (this != &rhs) {
-		*mainMap = *rhs.mainMap;
-		*continents = *rhs.continents;
+		delete mainMap;
+		delete continents;
+		delete isUndirected;
+		delete isValid;
+		mainMap = new std::unordered_map<Territory, std::unordered_set<Territory>>{*rhs.mainMap};
+		continents = new std::unordered_map<std::string, std::unordered_set<Territory>>{*rhs.continents};
+		isUndirected = new bool{*rhs.isUndirected};
+		isValid = new bool{*rhs.isValid};
 	}
 	return *this;
 }
@@ -181,6 +194,7 @@ bool Map::validate() {
 	// Verify if the map is empty
 	if (mainMap->empty()) {
 		std::cerr << "Map is invalid - Empty map" << std::endl;
+		return false;
 	}
 
 	// Verify if the map is a connected undirected graph 
@@ -338,7 +352,8 @@ MapLoader::~MapLoader() {
 // Copy assignment operator
 MapLoader& MapLoader::operator=(const MapLoader& rhs) {
 	if (this != &rhs) {
-		*map = *rhs.map;
+		delete map;
+		map = new Map{*rhs.map};
 	}
 	return *this;
 }
