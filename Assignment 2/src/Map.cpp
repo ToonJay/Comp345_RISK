@@ -1,24 +1,26 @@
 #include "Map.h"
 
-//////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Territory class function definitions
-//////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // Default constructor, allocates memory, but doesn't assign values
 Territory::Territory()
 	: name{new std::string}, numOfArmies{new int}, owner{new std::string} {
+	// std::cout << "Called Territory default constructor" << std::endl;
 }
 
 // Parameterized constructor, only the name can be set
 // The rest is to be set after construction
 Territory::Territory(std::string name)
 	: name{new std::string{name}}, numOfArmies{new int}, owner{new std::string} {
+	// std::cout << "Called Territory parameterized constructor" << std::endl;
 }
 
 // Copy constructor
 Territory::Territory(const Territory& source)
 	: name{new std::string{*source.name}}, numOfArmies{new int{*source.numOfArmies}}, owner{new std::string{*source.owner}} {
-
+	// std::cout << "Called Territory copy constructor" << std::endl;
 }
 
 // Destructor, deallocates memory for all the pointer data members
@@ -26,6 +28,7 @@ Territory::~Territory() {
 	delete name;
 	delete numOfArmies;
 	delete owner;
+	// std::cout << "Called Territory destructor" << std::endl;
 }
 
 // Copy assignment operator overload
@@ -73,14 +76,15 @@ void Territory::setOwner(std::string& owner) {
 	*this->owner = owner;
 }
 
-//////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Map class function definitions
-//////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // Default constructor, allocates memory, but doesn't assign values
 Map::Map() : mainMap{new std::unordered_map<Territory, std::unordered_set<Territory>>},
 	continents{new std::unordered_map<std::string, std::unordered_set<Territory>>},
 	isUndirected{new bool}, isValid{new bool} {
+	// std::cout << "Called Map default constructor" << std::endl;
 
 }
 
@@ -89,7 +93,7 @@ Map::Map(std::unordered_map<Territory, std::unordered_set<Territory>> mainMap, s
 	: mainMap{new std::unordered_map<Territory, std::unordered_set<Territory>>{mainMap}},
 	continents{new std::unordered_map<std::string, std::unordered_set<Territory>>{continents}},
 	isUndirected{new bool{true}}, isValid{new bool{true}} {
-
+	// std::cout << "Called Map parameterized constructor" << std::endl;
 }
 
 // Copy constructor that uses a delegate constructor
@@ -97,7 +101,7 @@ Map::Map(const Map& source)
 	: mainMap{new std::unordered_map<Territory, std::unordered_set<Territory>>{*source.mainMap}},
 	continents{new std::unordered_map<std::string, std::unordered_set<Territory>>{*source.continents}},
 	isUndirected{new bool{*source.isUndirected}}, isValid{new bool{*source.isValid}} {
-
+	// std::cout << "Called Map copy constructor" << std::endl;
 }
 
 // Destructor, deallocate memory for all the pointer data members
@@ -106,6 +110,7 @@ Map::~Map() {
 	delete continents;
 	delete isUndirected;
 	delete isValid;
+	// std::cout << "Called Map destructor" << std::endl;
 }
 
 // Copy assignment operator overload
@@ -245,9 +250,9 @@ bool Map::validate() {
 	return true;
 }
 
-//////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // MapLoader class function definitions
-//////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // Parameterized constructor
 // Creates Map object with data from a .map file
@@ -326,27 +331,24 @@ MapLoader::MapLoader(std::string filepath)
 		}
 		std::cerr << std::endl;
 	}
-	// Only validate map if it's valide, otherwise, delete the data
-	if (isValid) {
-		if (!map->validate()) {
-			map->getContinents().clear();
-			map->getMainMap().clear();
-		}
-	} else {
+	// If not valid, delete the data
+	if (!isValid) {
 		map->getContinents().clear();
 		map->getMainMap().clear();
 	}
+	// std::cout << "Called Maploader parameterized constructor" << std::endl;
 }
 
-// Copy constructor, uses parametized constructor as delegate
+// Copy constructor, uses parameterized constructor as delegate
 MapLoader::MapLoader(const MapLoader& source) 
 	: map{new Map(*source.map)} {
-
+	// std::cout << "Called Maploader copy constructor" << std::endl;
 }
 
 // Destructor, deallocate memory for all the pointer data members
 MapLoader::~MapLoader() {
 	delete map;
+	// std::cout << "Called Maploader destructor" << std::endl;
 }
 
 // Copy assignment operator

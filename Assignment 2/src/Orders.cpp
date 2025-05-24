@@ -1,24 +1,25 @@
 #include "Orders.h"
 
-//////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Order class function definitions
-//////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // Parameterized constructor
 Order::Order(std::string orderDescription)
 	: orderDescription{new std::string{orderDescription}}, orderEffect{new std::string{"No effect."}} {
-	std::cout << "Called Order constructor" << std::endl;
+	//std::cout << "Called Order parameterized constructor" << std::endl;
 }
 
 // Copy constructor
 Order::Order(const Order& source) 
 	: orderDescription {new std::string{*source.orderDescription}}, orderEffect{new std::string{*source.orderEffect}} {
+	//std::cout << "Called Order copy constructor" << std::endl;
 }
 
 // Destructor, deallocates memory for all the pointer data members
 Order::~Order() {
 	delete orderDescription;
-	std::cout << "Called Order destructor" << std::endl;
+	//std::cout << "Called Order destructor" << std::endl;
 }
 
 // Copy assignment operator overload
@@ -43,25 +44,26 @@ std::ostream& operator<<(std::ostream& os, const Order& obj) {
 	return os;
 }
 
-//////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Deploy subclass function definitions
-//////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // Default constructor
 Deploy::Deploy()
 	: Order{"Put a certain number of army units on a target territory"} {
-	std::cout << "Called Deploy contructor" << std::endl;
+	//std::cout << "Called Deploy default contructor" << std::endl;
 }
 
 // Copy constructor
 Deploy::Deploy(const Deploy& source) 
 	: Order{source} {
+	//std::cout << "Called Deploy copy contructor" << std::endl;
 }
 
 // Destructor, deallocates memory for all the pointer data members
 Deploy::~Deploy() {
 	delete orderEffect;
-	std::cout << "Called Deploy destructor" << std::endl;
+	//std::cout << "Called Deploy destructor" << std::endl;
 }
 
 // Verifies if the order is valid according to the order's meaning and the player's state
@@ -76,25 +78,26 @@ void Deploy::execute() {
 	}
 }
 
-//////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Advance subclass function definitions
-//////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // Default constructor
 Advance::Advance()
 	: Order{"Move a certain number of army units from one territory (source territory) to another territory (target territory)"} {
-	std::cout << "Called Advance contructor" << std::endl;
+	//std::cout << "Called Advance default contructor" << std::endl;
 }
 
 // Copy constructor
 Advance::Advance(const Advance& source)
 	: Order{source} {
+	//std::cout << "Called Advance copy contructor" << std::endl;
 }
 
 // Destructor, deallocates memory for all the pointer data members
 Advance::~Advance() {
 	delete orderEffect;
-	std::cout << "Called Advance destructor" << std::endl;
+	//std::cout << "Called Advance destructor" << std::endl;
 }
 
 // Verifies if the order is valid according to the order's meaning and the player's state
@@ -109,25 +112,26 @@ void Advance::execute() {
 	}
 }
 
-//////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Bomb subclass function definitions
-//////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // Default constructor
 Bomb::Bomb()
 	: Order{"Destroy half of the army units located on a target territory.\nThis order can only be issued if a player has the bomb card in their hand."} {
-	std::cout << "Called Bomb contructor" << std::endl;
+	//std::cout << "Called Bomb default contructor" << std::endl;
 }
 
 // Copy constructor
 Bomb::Bomb(const Bomb& source)
 	: Order{source} {
+	//std::cout << "Called Bomb copy contructor" << std::endl;
 }
 
 // Destructor, deallocates memory for all the pointer data members
 Bomb::~Bomb() {
 	delete orderEffect;
-	std::cout << "Called Bomb destructor" << std::endl;
+	//std::cout << "Called Bomb destructor" << std::endl;
 }
 
 // Verifies if the order is valid according to the order's meaning and the player's state
@@ -142,25 +146,26 @@ void Bomb::execute() {
 	}
 }
 
-//////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Blockade subclass function definitions
-//////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // Default constructor
 Blockade::Blockade()
 	: Order{"Triple the number of army units on a target territory and make it a neutral territory.\nThis order can only be issued if a player has the blockade card in their hand."} {
-	std::cout << "Called Blockade contructor" << std::endl;
+	//std::cout << "Called Blockade default contructor" << std::endl;
 }
 
 // Copy constructor
 Blockade::Blockade(const Blockade& source)
 	: Order{source} {
+	//std::cout << "Called Blockade copy contructor" << std::endl;
 }
 
 // Destructor, deallocates memory for all the pointer data members
 Blockade::~Blockade() {
 	delete orderEffect;
-	std::cout << "Called Blockade destructor" << std::endl;
+	//std::cout << "Called Blockade destructor" << std::endl;
 }
 
 // Verifies if the order is valid according to the order's meaning and the player's state
@@ -175,25 +180,26 @@ void Blockade::execute() {
 	}
 }
 
-//////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Airlift subclass function definitions
-//////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // Default constructor
 Airlift::Airlift()
 	: Order{"Advance a certain number of army units from one from one territory (source territory) to another territory(target territory).\nThis order can only be issued if a player has the airlift card in their hand."} {
-	std::cout << "Called Airlift contructor" << std::endl;
+	//std::cout << "Called Airlift default contructor" << std::endl;
 }
 
 // Copy constructor
 Airlift::Airlift(const Airlift& source)
 	: Order{source} {
+	//std::cout << "Called Airlift copy contructor" << std::endl;
 }
 
 // Destructor, deallocates memory for all the pointer data members
 Airlift::~Airlift() {
 	delete orderEffect;
-	std::cout << "Called Airlift destructor" << std::endl;
+	//std::cout << "Called Airlift destructor" << std::endl;
 }
 
 // Verifies if the order is valid according to the order's meaning and the player's state
@@ -208,25 +214,26 @@ void Airlift::execute() {
 	}
 }
 
-//////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Negotiate subclass function definitions
-//////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // Default constructor
 Negotiate::Negotiate()
 	: Order{"Prevent attacks between the current player and another target player until the end of the turn.\nThis order can only be issued if a player has the diplomacy card in their hand."} {
-	std::cout << "Called Negotiate contructor" << std::endl;
+	//std::cout << "Called Negotiate default contructor" << std::endl;
 }
 
 // Copy constructor
 Negotiate::Negotiate(const Negotiate& source)
 	: Order{source} {
+	//std::cout << "Called Negotiate copy contructor" << std::endl;
 }
 
 // Destructor, deallocates memory for all the pointer data members
 Negotiate::~Negotiate() {
 	delete orderEffect;
-	std::cout << "Called Negotiate destructor" << std::endl;
+	//std::cout << "Called Negotiate destructor" << std::endl;
 }
 
 // Verifies if the order is valid according to the order's meaning and the player's state
@@ -241,19 +248,20 @@ void Negotiate::execute() {
 	}
 }
 
-//////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // OrdersList class function definitions
-//////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // Default constructor
 OrdersList::OrdersList() 
 	: orders{new std::vector<Order*>} {
-	std::cout << "Called OrdersList constructor" << std::endl;
+	//std::cout << "Called OrdersList default constructor" << std::endl;
 }
 
 // Copy constructor
 OrdersList::OrdersList(const OrdersList& source) 
 	: orders{new std::vector<Order*>{*source.orders}} {
+	//std::cout << "Called OrdersList copy constructor" << std::endl;
 }
 
 // Destructor, deallocates memory for the pointer data member
@@ -262,7 +270,7 @@ OrdersList::~OrdersList() {
 		delete o;
 	}
 	delete orders;
-	std::cout << "Called OrdersList destructor" << std::endl;
+	//std::cout << "Called OrdersList destructor" << std::endl;
 }
 
 // Copy assignment operator overload
@@ -289,6 +297,11 @@ std::ostream& operator<<(std::ostream& os, const OrdersList& obj) {
 // Getter
 std::vector<Order*>& OrdersList::getOrders() const {
 	return *orders;
+}
+
+// Add order to player's OrdersList
+void OrdersList::addOrder() {
+	getOrders().emplace_back(new Blockade{});
 }
 
 // Remove order pointer and delete the pointed to object

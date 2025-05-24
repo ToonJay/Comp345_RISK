@@ -2,6 +2,11 @@
 #define _GAMEENGINE_H_
 #include <iostream>
 #include <string>
+#include <algorithm>
+#include "Player.h"
+#include "Map.h"
+#include "Cards.h"
+#include "Orders.h"
 #include "CommandProcessing.h"
 
 enum class GameState {Start, Map_Loaded, Map_Validated, Players_Added, Assign_Reinforcement, Issue_Orders, Execute_Orders, Win, Exit_Program};
@@ -14,6 +19,9 @@ class GameEngine {
 private:
 	GameState* gameState;
 	CommandProcessor* cmdProcessor;
+	Map* map;
+	Deck* deck;
+	std::vector<Player>* playersList;
 public:
 	// Constructors
 	// Default constructor
@@ -29,11 +37,15 @@ public:
 	// Stream insertion operator overload
 	friend std::ostream& operator<<(std::ostream& os, const GameEngine& obj);
 
-	// Getter
+	// Getters
 	GameState& getGameState() const;
+	CommandProcessor& getCommandProcessor() const;
 
-	// Starts and controls the game loop
-	void gameUI();
+	// Transitions from one gameState to the next
+	void transition(const Command& command);
+
+	// Setup the game
+	void startupPhase();
 };
 
 #endif

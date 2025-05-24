@@ -159,11 +159,12 @@ public:
 	// Getter
 	std::vector<Order*>& getOrders() const;
 
+	// Add order to player's OrdersList
+	void addOrder();
 	// Remove order from orders
 	void remove(int index);
 	// Moves an order to a specific index of orders
 	void move(int source, int destination);
-	
 };
 
 #endif

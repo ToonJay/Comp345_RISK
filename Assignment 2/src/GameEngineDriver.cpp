@@ -1,6 +1,6 @@
 #include "GameEngine.h"
 
-void testGameStates() {
-	GameEngine gameEngine{};
-	gameEngine.gameUI();
+void testStartupPhase() {
+	GameEngine ge{};
+	ge.startupPhase();
 }

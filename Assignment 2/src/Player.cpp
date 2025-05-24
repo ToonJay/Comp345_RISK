@@ -1,42 +1,53 @@
 #include "Player.h"
+#include "Map.h"
+#include "Cards.h"
+#include "Orders.h"
 
-//////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Player class function definitions
-//////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // Default constructor, allocates memory, but doesn't assign values
 Player::Player() 
-	: playerName{new std::string}, playerTerritories{new std::vector<Territory*>}, playerHand{new Hand}, playerOrdersList{new OrdersList} {
+	: playerName{new std::string}, reinforcementPool{new int}, playerTerritories {new std::vector<const Territory*>}, playerHand{new Hand}, playerOrdersList{new OrdersList} {
+	//std::cout << "Called Player default constructor" << std::endl;
 }
 
 // Parameterized constructor, only the playerName gets a value, the rest only get allocated memory
 Player::Player(std::string playerName) 
-	: playerName{new std::string{playerName}}, playerTerritories {new std::vector<Territory*>}, playerHand{new Hand}, playerOrdersList{new OrdersList} {
+	: playerName{new std::string{playerName}}, reinforcementPool{new int}, playerTerritories {new std::vector<const Territory*>}, playerHand{new Hand}, playerOrdersList{new OrdersList} {
+	//std::cout << "Called Player parameterized constructor" << std::endl;
 }
 
 // Copy constructor
 Player::Player(const Player& source) 
-	: playerName{new std::string{*source.playerName}}, playerTerritories{new std::vector<Territory*>{*source.playerTerritories}},
-	playerHand{new Hand{*source.playerHand}}, playerOrdersList{new OrdersList{*source.playerOrdersList}} {
+	: playerName{new std::string{*source.playerName}}, reinforcementPool{new int{*source.reinforcementPool}}, 
+	playerTerritories{new std::vector<const Territory*>{*source.playerTerritories}}, playerHand{new Hand{*source.playerHand}}, 
+	playerOrdersList{new OrdersList{*source.playerOrdersList}} {
+	//std::cout << "Called Player copy constructor" << std::endl;
 }
 
 // Destructor, deallocate memory for all the pointer data members
 Player::~Player() {
 	delete playerName;
+	delete reinforcementPool;
 	delete playerTerritories;
 	delete playerHand;
 	delete playerOrdersList;
+	//std::cout << "Called Player destructor" << std::endl;
 }
 
 // Copy assignment operator
 Player& Player::operator=(const Player& rhs) {
 	if (this != &rhs) {
 		delete playerName;
+		delete reinforcementPool;
 		delete playerTerritories;
 		delete playerHand;
 		delete playerOrdersList;
 		playerName = new std::string{*rhs.playerName};
-		playerTerritories = new std::vector<Territory*>{*rhs.playerTerritories};
+		reinforcementPool = new int{*rhs.reinforcementPool};
+		playerTerritories = new std::vector<const Territory*>{*rhs.playerTerritories};
 		playerHand = new Hand{*rhs.playerHand};
 		playerOrdersList = new OrdersList{*rhs.playerOrdersList};
 	}
@@ -53,7 +64,11 @@ std::string& Player::getPlayerName() const {
 	return *playerName;
 }
 
-std::vector<Territory*>& Player::getPlayerTerritories() const {
+int& Player::getReinforcementPool() const {
+	return *reinforcementPool;
+}
+
+std::vector<const Territory*>& Player::getPlayerTerritories() const {
 	return *playerTerritories;
 }
 
@@ -85,16 +100,21 @@ std::vector<Territory*> Player::toAttack() {
 
 // Adds order to player's list of orders (will probably have a parameter later)
 void Player::issueOrder() {
-	playerOrdersList->getOrders().emplace_back(new Blockade{});
+	playerOrdersList->addOrder();
 }
 
 // Stream insertion operator
 std::ostream& operator<<(std::ostream& os, const Player& obj) {
 	os << "[Player]" << std::endl;
 	os << "Name: " << obj.getPlayerName() << std::endl;
+	os << "Reinforcement Pool: " << obj.getReinforcementPool() << std::endl;
 	os << "Owned Territories:" << std::endl;
 	for (const Territory* t : obj.getPlayerTerritories()) {
 		os << *t << std::endl;
+	}
+	os << "Player's Hand: " << std::endl;
+	for (const Card* c : obj.getPlayerHand().getCards()) {
+		os << *c << std::endl;
 	}
 	os << "Orders List:" << std::endl;
 	for (const Order* o : obj.getPlayerOrdersList().getOrders()) {

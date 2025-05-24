@@ -72,7 +72,7 @@ public:
 	Command& getCommand();
 
 	// Validates whether or not a command is valid during the current game state
-	void validate(Command& command, GameState& gameState) const;
+	bool validate(Command& command, GameState& gameState) const;
 };
 
 /*

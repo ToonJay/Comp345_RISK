@@ -1,11 +1,13 @@
 #ifndef _PLAYER_H_
 #define _PLAYER_H_
-#include "Map.h"
-#include "Cards.h"
-#include "Orders.h"
 #include <iostream>
 #include <string>
 #include <vector>
+
+class Territory;
+class Hand;
+class OrdersList;
+
 /*
 * Player class
 * Keeps track of player orders, territories and hands
@@ -13,14 +15,15 @@
 class Player {
 private:
 	std::string* playerName;
-	std::vector<Territory*>* playerTerritories;
+	int* reinforcementPool;
+	std::vector<const Territory*>* playerTerritories;
 	Hand* playerHand;
 	OrdersList* playerOrdersList;
 public:
 	// Constructors
 	// Default constructor
 	Player();
-	// Parametized constructor
+	// parameterized constructor
 	Player(std::string playerName);
 	// Copy constructor
 	Player(const Player& source);
@@ -37,7 +40,8 @@ public:
 
 	// Getters
 	std::string& getPlayerName() const;
-	std::vector<Territory*>& getPlayerTerritories() const;
+	int& getReinforcementPool() const;
+	std::vector<const Territory*>& getPlayerTerritories() const;
 	Hand& getPlayerHand() const;
 	OrdersList& getPlayerOrdersList() const;
 

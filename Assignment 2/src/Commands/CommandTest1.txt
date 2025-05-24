@@ -1,15 +1,8 @@
-loadmap <mapfile>
+loadmap ./src/Maps/World.map
 validatemap
-addplayer <playername>
-addplayer <playername>
+addplayer Jay
+addplayer Joe
+addplayer Tommy
+addplayer Cook
+addplayer John
 gamestart
-issueorder
-issueorder
-endissueorders
-execorder
-execorder
-endexecorders
-issueorder
-endissueorders
-win
-quit
