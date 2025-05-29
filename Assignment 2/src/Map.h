@@ -18,7 +18,7 @@ private:
 	int* numOfArmies;
 	std::string* owner;
 public:
-	// Constructors
+	//--Constructors--//
 	// Default constructor
 	Territory();
 	// Parameterized constructor
@@ -28,7 +28,7 @@ public:
 	// Destructor
 	~Territory();
 
-	// Operator overloads
+	//--Operator overloads--//
 	// Copy assignment operator overload
 	Territory& operator=(const Territory& rhs);
 	// Equality
@@ -36,13 +36,10 @@ public:
 	// Stream insertion
 	friend std::ostream& operator<<(std::ostream& os, const Territory& obj);
 
-	// Getters
+	// Getters //
 	std::string& getName() const;
 	int& getNumOfArmies() const;
 	std::string& getOwner() const;
-	// Setters
-	void setNumOfArmies(int& numOfArmies);
-	void setOwner(std::string& owner);
 };
 
 /* 
@@ -55,28 +52,34 @@ class Map {
 private:
 	std::unordered_map<Territory, std::unordered_set<Territory>>* mainMap;
 	std::unordered_map<std::string, std::unordered_set<Territory>>* continents;
+	std::unordered_map<std::string, int>* continentBonuses;
 	bool* isUndirected;
 	bool* isValid;
 public:
-	// Constructors
+	//--Constructors--//
 	// Default constructor
 	Map();
 	// Parameterized constructor
-	Map(std::unordered_map<Territory, std::unordered_set<Territory>> mainMap, std::unordered_map<std::string, std::unordered_set<Territory>> continents);
+	Map(
+		std::unordered_map<Territory, std::unordered_set<Territory>> mainMap,
+		std::unordered_map<std::string, std::unordered_set<Territory>> continents,
+		std::unordered_map<std::string, int> continentBonuses
+	);
 	// Copy constructor
 	Map(const Map& source);
 	// Destructor
 	~Map();
 
-	// Operator overloads
+	//--Operator overloads--//
 	// Copy assignment operator overload
 	Map& operator=(const Map& rhs);
 	// Stream insertion operator overload
 	friend std::ostream& operator<<(std::ostream& os, const Map& obj);
 
-	// Getters (no setters needed for this class)
+	// Getters //
 	std::unordered_map<Territory, std::unordered_set<Territory>>& getMainMap() const;
 	std::unordered_map<std::string, std::unordered_set<Territory>>& getContinents() const;
+	std::unordered_map<std::string, int>& getContinentBonuses() const;
 
 	// Validation function to see whether or not the game map is valid
 	bool validate();
@@ -85,8 +88,6 @@ public:
 		const Territory& t, 
 		std::unordered_map<Territory, std::unordered_set<Territory>>& mainMap,
 		std::unordered_set<Territory>& visited);
-
-	
 };
 
 /*
@@ -97,7 +98,7 @@ class MapLoader {
 private:
 	Map* map;
 public:
-	// Constructors
+	//--Constructors--//
 	// Parameterized constructor (no default because you need a file to read from)
 	MapLoader(std::string filepath);
 	// Copy constructor
@@ -105,13 +106,13 @@ public:
 	// Destructor
 	~MapLoader();
 
-	//Operator overloads
+	//--Operator overloads--//
 	// Copy assignment operator overload
 	MapLoader& operator=(const MapLoader& rhs);
 	// Stream insertion operator overload
 	friend std::ostream& operator<<(std::ostream& os, const MapLoader& obj);
 
-	// Getter
+	// Getter //
 	Map& getMap() const;
 };
 

@@ -6,14 +6,14 @@
 
 // Default constructor, allocates memory, but doesn't assign values
 Territory::Territory()
-	: name{new std::string}, numOfArmies{new int}, owner{new std::string} {
+	: name{new std::string}, numOfArmies{new int}, owner{new std::string{"Neutral"}} {
 	// std::cout << "Called Territory default constructor" << std::endl;
 }
 
 // Parameterized constructor, only the name can be set
 // The rest is to be set after construction
 Territory::Territory(std::string name)
-	: name{new std::string{name}}, numOfArmies{new int}, owner{new std::string} {
+	: name{new std::string{name}}, numOfArmies{new int}, owner{new std::string{"Neutral"}} {
 	// std::cout << "Called Territory parameterized constructor" << std::endl;
 }
 
@@ -68,14 +68,6 @@ std::string& Territory::getOwner() const {
 	return *owner;
 }
 
-void Territory::setNumOfArmies(int& numOfArmies) {
-	*this->numOfArmies = numOfArmies;
-}
-
-void Territory::setOwner(std::string& owner) {
-	*this->owner = owner;
-}
-
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Map class function definitions
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -83,15 +75,21 @@ void Territory::setOwner(std::string& owner) {
 // Default constructor, allocates memory, but doesn't assign values
 Map::Map() : mainMap{new std::unordered_map<Territory, std::unordered_set<Territory>>},
 	continents{new std::unordered_map<std::string, std::unordered_set<Territory>>},
+	continentBonuses{new std::unordered_map<std::string, int>},
 	isUndirected{new bool}, isValid{new bool} {
 	// std::cout << "Called Map default constructor" << std::endl;
 
 }
 
 // Parameterized constructor
-Map::Map(std::unordered_map<Territory, std::unordered_set<Territory>> mainMap, std::unordered_map<std::string, std::unordered_set<Territory>> continents) 
+Map::Map(
+	std::unordered_map<Territory, std::unordered_set<Territory>> mainMap,
+	std::unordered_map<std::string, std::unordered_set<Territory>> continents,
+	std::unordered_map<std::string, int> continentBonuses
+) 
 	: mainMap{new std::unordered_map<Territory, std::unordered_set<Territory>>{mainMap}},
 	continents{new std::unordered_map<std::string, std::unordered_set<Territory>>{continents}},
+	continentBonuses{new std::unordered_map<std::string, int>{continentBonuses}},
 	isUndirected{new bool{true}}, isValid{new bool{true}} {
 	// std::cout << "Called Map parameterized constructor" << std::endl;
 }
@@ -100,6 +98,7 @@ Map::Map(std::unordered_map<Territory, std::unordered_set<Territory>> mainMap, s
 Map::Map(const Map& source)
 	: mainMap{new std::unordered_map<Territory, std::unordered_set<Territory>>{*source.mainMap}},
 	continents{new std::unordered_map<std::string, std::unordered_set<Territory>>{*source.continents}},
+	continentBonuses{new std::unordered_map<std::string, int>{*source.continentBonuses}},
 	isUndirected{new bool{*source.isUndirected}}, isValid{new bool{*source.isValid}} {
 	// std::cout << "Called Map copy constructor" << std::endl;
 }
@@ -108,6 +107,7 @@ Map::Map(const Map& source)
 Map::~Map() {
 	delete mainMap;
 	delete continents;
+	delete continentBonuses;
 	delete isUndirected;
 	delete isValid;
 	// std::cout << "Called Map destructor" << std::endl;
@@ -118,10 +118,12 @@ Map& Map::operator=(const Map& rhs) {
 	if (this != &rhs) {
 		delete mainMap;
 		delete continents;
+		delete continentBonuses;
 		delete isUndirected;
 		delete isValid;
 		mainMap = new std::unordered_map<Territory, std::unordered_set<Territory>>{*rhs.mainMap};
 		continents = new std::unordered_map<std::string, std::unordered_set<Territory>>{*rhs.continents};
+		continentBonuses = new std::unordered_map<std::string, int>{*rhs.continentBonuses};
 		isUndirected = new bool{*rhs.isUndirected};
 		isValid = new bool{*rhs.isValid};
 	}
@@ -143,7 +145,7 @@ std::ostream& operator<<(std::ostream& os, const Map& obj) {
 	if (!obj.getContinents().empty()) {
 		os << std::endl << "[Continents]" << std::endl;
 		for (const auto& continent : obj.getContinents()) {
-			os << continent.first << " : - ";
+			os << continent.first << " (" << obj.getContinentBonuses().at(continent.first) << ") : - ";
 			for (const auto& territory : continent.second) {
 				os << territory << " - ";
 			}
@@ -160,6 +162,10 @@ std::unordered_map<Territory, std::unordered_set<Territory>>& Map::getMainMap() 
 
 std::unordered_map<std::string, std::unordered_set<Territory>>& Map::getContinents() const {
 	return *continents;
+}
+
+std::unordered_map<std::string, int>& Map::getContinentBonuses() const {
+	return *continentBonuses;
 }
 
 // Depth-first-search to check if the main map is a graph that's connected and undirected (every connection is bidirectional)
@@ -277,6 +283,7 @@ MapLoader::MapLoader(std::string filepath)
 				std::getline(in_file, line);
 				if (line != "[Territories]" && line != "") {
 					continents.insert(line.substr(0, line.find('=')));
+					map->getContinentBonuses()[line.substr(0, line.find('='))] = static_cast<int>(line.at(line.find('=') + 1)) - 48;
 				}
 			}
 			if (line != "[Territories]" || continents.empty()) {
@@ -335,6 +342,8 @@ MapLoader::MapLoader(std::string filepath)
 	if (!isValid) {
 		map->getContinents().clear();
 		map->getMainMap().clear();
+	} else {
+		std::cout << *map << std::endl;
 	}
 	// std::cout << "Called Maploader parameterized constructor" << std::endl;
 }

@@ -14,7 +14,7 @@ private:
 protected:
 	std::string* orderEffect;
 public:
-	// Constructors
+	//--Constructors--//
 	// Parameterized constructor
 	Order(std::string orderDescription);
 	// Copy constructor
@@ -22,7 +22,7 @@ public:
 	// Destructor
 	virtual ~Order();
 
-	// Operator overloads
+	//--Operator overloads--//
 	// Copy assignment operator overload
 	Order& operator=(const Order& rhs);
 	// Stream insertion operator overload
@@ -40,7 +40,7 @@ public:
 */
 class Deploy : public Order {
 public:
-	// Constructors
+	//--Constructors--//
 	// Default constructor
 	Deploy();
 	// Copy constructor
@@ -56,7 +56,7 @@ public:
 
 class Advance : public Order {
 public:
-	// Constructors
+	//--Constructors--//
 	// Default constructor
 	Advance();
 	// Copy constructor
@@ -72,7 +72,7 @@ public:
 
 class Bomb : public Order {
 public:
-	// Constructors
+	//--Constructors--//
 	// Default constructor
 	Bomb();
 	// Copy constructor
@@ -88,7 +88,7 @@ public:
 
 class Blockade : public Order {
 public:
-	// Constructors
+	//--Constructors--//
 	// Default constructor
 	Blockade();
 	// Copy constructor
@@ -104,7 +104,7 @@ public:
 
 class Airlift : public Order {
 public:
-	// Constructors
+	//--Constructors--//
 	// Default constructor
 	Airlift();
 	// Copy constructor
@@ -120,7 +120,7 @@ public:
 
 class Negotiate : public Order {
 public:
-	// Constructors
+	//--Constructors--//
 	// Default constructor
 	Negotiate();
 	// Copy constructor
@@ -142,7 +142,7 @@ class OrdersList {
 private:
 	std::vector<Order*>* orders;
 public:
-	// Constructors
+	//--Constructors--//
 	// Default constructor
 	OrdersList();
 	// Copy constructor
@@ -150,13 +150,13 @@ public:
 	// Destructor
 	~OrdersList();
 
-	// Operator overloads
+	//--Operator overloads--//
 	// Copy assignment operator overload
 	OrdersList& operator=(const OrdersList& rhs);
 	// Stream insertion operator overload
 	friend std::ostream& operator<<(std::ostream& os, const OrdersList& obj);
 
-	// Getter
+	// Getter //
 	std::vector<Order*>& getOrders() const;
 
 	// Add order to player's OrdersList

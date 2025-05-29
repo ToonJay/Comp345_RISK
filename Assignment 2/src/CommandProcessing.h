@@ -16,7 +16,7 @@ private:
 	std::string* command;
 	std::string* effect;
 public:
-	// Constructors
+	//--Constructors--//
 	// Parameterized constructor
 	Command(std::string command);
 	// Copy constructor
@@ -24,13 +24,13 @@ public:
 	// Destructor
 	~Command();
 
-	// Operator overloads
+	//--Operator overloads--//
 	// Copy assignment operator overload
 	Command& operator=(const Command& rhs);
 	// Stream insertion operator overload
 	friend std::ostream& operator<<(std::ostream& os, const Command& obj);
 
-	// Getters
+	// Getters //
 	std::string& getCommand() const;
 	std::string& getEffect() const;
 
@@ -51,7 +51,7 @@ protected:
 	// save command as a Command object
 	void saveCommand(std::string& command);
 public:
-	// Constructors
+	//--Constructors--//
 	// Default constructor
 	CommandProcessor();
 	// Copy constructor
@@ -59,13 +59,13 @@ public:
 	// Destructor
 	virtual ~CommandProcessor();
 
-	// Operator overloads
+	//--Operator overloads--//
 	// Copy assignment operator overload
 	CommandProcessor& operator=(const CommandProcessor& rhs);
 	// Stream insertion operator overload
 	friend std::ostream& operator<<(std::ostream& os, const CommandProcessor& obj);
 
-	// Getter
+	// Getter //
 	std::list<Command>& getCommandList() const;
 
 	// Creates, stores and returns Command object
@@ -86,7 +86,7 @@ private:
 	std::ifstream* file;
 	std::string* line;
 public:
-	// Constructors
+	//--Constructors--//
 	// Parameterized constructor
 	FileLineReader(std::string fileName);
 	// Copy constructor
@@ -94,13 +94,13 @@ public:
 	// Destructor
 	~FileLineReader();
 
-	// Operator overloads
+	//--Operator overloads--//
 	// Copy assignment operator overload
 	FileLineReader& operator=(const FileLineReader& rhs);
 	// Stream insertion overpeator overload
 	friend std::ostream& operator<<(std::ostream& os, const FileLineReader& obj);
 
-	// Getters
+	// Getters //
 	std::string& getFileName() const;
 	std::ifstream& getFile() const;
 	std::string& getLine() const;
@@ -120,7 +120,7 @@ private:
 	// read command from file
 	virtual void readCommand() override;
 public:
-	// Constructors
+	//--Constructors--//
 	// Parameterized constructor
 	FileCommandProcessorAdapter(std::string file);
 	// Copy constructor
@@ -128,13 +128,13 @@ public:
 	// Destructor
 	virtual ~FileCommandProcessorAdapter();
 
-	// Operator overloads
+	//--Operator overloads--//
 	// Copy assignment operator overload
 	FileCommandProcessorAdapter& operator=(const FileCommandProcessorAdapter& rhs);
 	// Stream insertion operator overload
 	friend std::ostream& operator<<(std::ostream& os, const FileCommandProcessorAdapter& obj);
 
-	// Getter
+	// Getter //
 	FileLineReader& getFileLineReader() const;
 };
 

@@ -16,7 +16,7 @@ class Deck;
 class Card {
 	CardType* cardType;
 public:
-	// Constructors
+	//--Constructors--//
 	// Parameterized constructor
 	Card(CardType cardType);
 	// Copy constructor
@@ -24,7 +24,7 @@ public:
 	// Destructor
 	~Card();
 
-	// Operator overloads
+	//--Operator overloads--//
 	// Copy assignment operator overload
 	Card& operator=(const Card& rhs);
 	// Equality operator overload
@@ -32,7 +32,7 @@ public:
 	// Stream insertion operator overload
 	friend std::ostream& operator<<(std::ostream& os, const Card& obj);
 
-	// Getter
+	// Getter //
 	CardType& getCardType() const;
 
 	// Creates special order and adds it to player's list of orders
@@ -47,7 +47,7 @@ class Hand {
 private:
 	std::vector<Card*>* cards;
 public:
-	// Constructors
+	//--Constructors--//
 	// Default constructor
 	Hand();
 	// Copy constructor
@@ -55,13 +55,13 @@ public:
 	// Destructor
 	~Hand();
 
-	// Operator overloads
+	//--Operator overloads--//
 	// Copy assignment operator overload
 	Hand& operator=(const Hand& rhs);
 	// Stream insertion operator overload
 	friend std::ostream& operator<<(std::ostream& os, const Hand& obj);
 
-	// Getter
+	// Getter //
 	std::vector<Card*>& getCards() const;
 };
 
@@ -74,7 +74,7 @@ class Deck {
 private:
 	std::vector<Card*>* cards;
 public:
-	// Constructors
+	//--Constructors--//
 	// Default constructor
 	Deck();
 	// Copy constructor
@@ -82,13 +82,13 @@ public:
 	// Destructor
 	~Deck();
 
-	// Operator overloads
+	//--Operator overloads--//
 	// Copy assignment operator overload
 	Deck& operator=(const Deck& rhs);
 	// Stream insertion operator overload
 	friend std::ostream& operator<<(std::ostream& os, const Deck& obj);
 
-	// Getter
+	// Getter //
 	std::vector<Card*>& getCards() const;
 
 	// Removes card from deck and adds it to a player's hand

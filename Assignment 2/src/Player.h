@@ -3,6 +3,7 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include <unordered_set>
 
 class Territory;
 class Hand;
@@ -16,11 +17,11 @@ class Player {
 private:
 	std::string* playerName;
 	int* reinforcementPool;
-	std::vector<const Territory*>* playerTerritories;
+	std::unordered_set<const Territory*>* playerTerritories;
 	Hand* playerHand;
 	OrdersList* playerOrdersList;
 public:
-	// Constructors
+	//--Constructors--//
 	// Default constructor
 	Player();
 	// parameterized constructor
@@ -30,7 +31,7 @@ public:
 	// Destructor constructor
 	~Player();
 
-	// Operator overloads
+	//--Operator overloads--//
 	// Copy assignment operator overload
 	Player& operator=(const Player& rhs);
 	// Equality operator overload
@@ -38,10 +39,10 @@ public:
 	// Stream insertion operator overload
 	friend std::ostream& operator<<(std::ostream& os, const Player& obj);
 
-	// Getters
+	// Getters //
 	std::string& getPlayerName() const;
 	int& getReinforcementPool() const;
-	std::vector<const Territory*>& getPlayerTerritories() const;
+	std::unordered_set<const Territory*>& getPlayerTerritories() const;
 	Hand& getPlayerHand() const;
 	OrdersList& getPlayerOrdersList() const;
 

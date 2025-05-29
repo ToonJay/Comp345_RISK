@@ -2,4 +2,8 @@ loadmap ./src/Maps/World.map
 validatemap
 addplayer Jay
 addplayer Joe
+addplayer Tommy
+addplayer Cook
+addplayer John
+addplayer Vinny
 gamestart

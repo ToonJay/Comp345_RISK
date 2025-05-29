@@ -1,4 +1,5 @@
 #include "GameEngine.h"
+
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // GameEngine class function definitions 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -173,7 +174,7 @@ void GameEngine::startupPhase() {
 			} else if (cmdString == "gamestart") {
 				if (playersList->size() > 1) {
 
-					size_t numOfPlayerTerritories{map->getMainMap().size() / 2 - (map->getMainMap().size() / 2) % playersList->size()};
+					size_t numOfPlayerTerritories{map->getMainMap().size() / 2 - map->getMainMap().size() / 2 % playersList->size()};
 					std::cout << numOfPlayerTerritories << std::endl;
 					std::vector<int> territoryDistribution;
 					for (size_t i = 0; i < numOfPlayerTerritories; i++) {
@@ -187,7 +188,8 @@ void GameEngine::startupPhase() {
 					int count{0};
 					for (const auto& territory : map->getMainMap()) {
 						if (count < numOfPlayerTerritories) {
-							playersList->at(territoryDistribution.at(count)).getPlayerTerritories().push_back(&territory.first);
+							playersList->at(territoryDistribution.at(count)).getPlayerTerritories().emplace(&territory.first);
+							territory.first.getOwner() = playersList->at(territoryDistribution.at(count)).getPlayerName();
 							count++;
 						} else {
 							break;
@@ -208,4 +210,58 @@ void GameEngine::startupPhase() {
 			std::cout << std::endl << cmd << std::endl;
 		}
 	}
+	mainGameLoop();
+}
+
+void GameEngine::mainGameLoop() {
+	reinforcementPhase();
+	issueOrdersPhase();
+	executeOrdersPhase();
+}
+
+void GameEngine::reinforcementPhase() {
+	std::cout << "Reinforcement Phase\n" << std::endl;
+
+	int reinforcements;
+	for (const Player& p : *playersList) {
+		reinforcements = p.getPlayerTerritories().size() / 3;
+		if (reinforcements <= 3) {
+			p.getReinforcementPool() += 3;
+		} else {
+			p.getReinforcementPool() += reinforcements;
+		}
+	}
+
+	for (const auto& continent : map->getContinents()) {
+		std::string owner{map->getMainMap().find(*continent.second.begin())->first.getOwner()};
+		if (owner != "Neutral") {
+			bool allSameOwner{true};
+			for (const auto& territory : continent.second) {
+				if (owner != map->getMainMap().find(territory)->first.getOwner()) {
+					allSameOwner = false;
+					break;
+				}
+			}
+
+			if (allSameOwner) {
+				std::cout << "Continent of " << continent.first << " is fully owned by " << owner << std::endl;
+				std::cout << owner << " receives additional reinforcements of " << map->getContinentBonuses().at(continent.first) << std::endl;
+				for (const Player& player : *playersList) {
+					if (owner == player.getPlayerName()) {
+						player.getReinforcementPool() += map->getContinentBonuses().at(continent.first);
+					}
+				}
+			}
+		}
+	}
+
+	for (const Player& p : *playersList) {
+		std::cout << p << std::endl;
+	}
+}
+
+void GameEngine::issueOrdersPhase() {
+}
+
+void GameEngine::executeOrdersPhase() {
 }

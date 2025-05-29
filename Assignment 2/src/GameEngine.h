@@ -23,7 +23,7 @@ private:
 	Deck* deck;
 	std::vector<Player>* playersList;
 public:
-	// Constructors
+	//--Constructors--//
 	// Default constructor
 	GameEngine();
 	// Copy constructor
@@ -31,21 +31,27 @@ public:
 	// Destructor
 	~GameEngine();
 
-	// Operator overloads
+	//--Operator overloads--//
 	// Copy assignment operator overload
 	GameEngine& operator=(const GameEngine& rhs);
 	// Stream insertion operator overload
 	friend std::ostream& operator<<(std::ostream& os, const GameEngine& obj);
 
-	// Getters
+	// Getters //
 	GameState& getGameState() const;
 	CommandProcessor& getCommandProcessor() const;
 
 	// Transitions from one gameState to the next
 	void transition(const Command& command);
 
-	// Setup the game
+	//--Game phases--//
+	// Where the game is setup
 	void startupPhase();
+	// Where the game is played once started
+	void mainGameLoop();
+	void reinforcementPhase();
+	void issueOrdersPhase();
+	void executeOrdersPhase();
 };
 
 #endif
