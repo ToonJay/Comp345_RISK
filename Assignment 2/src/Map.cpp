@@ -73,7 +73,7 @@ std::string& Territory::getOwner() const {
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // Default constructor, allocates memory, but doesn't assign values
-Map::Map() : mainMap{new std::unordered_map<Territory, std::unordered_set<Territory>>},
+Map::Map() : gameMap{new std::unordered_map<Territory, std::unordered_set<Territory>>},
 	continents{new std::unordered_map<std::string, std::unordered_set<Territory>>},
 	continentBonuses{new std::unordered_map<std::string, int>},
 	isUndirected{new bool}, isValid{new bool} {
@@ -83,11 +83,11 @@ Map::Map() : mainMap{new std::unordered_map<Territory, std::unordered_set<Territ
 
 // Parameterized constructor
 Map::Map(
-	std::unordered_map<Territory, std::unordered_set<Territory>> mainMap,
+	std::unordered_map<Territory, std::unordered_set<Territory>> gameMap,
 	std::unordered_map<std::string, std::unordered_set<Territory>> continents,
 	std::unordered_map<std::string, int> continentBonuses
 ) 
-	: mainMap{new std::unordered_map<Territory, std::unordered_set<Territory>>{mainMap}},
+	: gameMap{new std::unordered_map<Territory, std::unordered_set<Territory>>{gameMap}},
 	continents{new std::unordered_map<std::string, std::unordered_set<Territory>>{continents}},
 	continentBonuses{new std::unordered_map<std::string, int>{continentBonuses}},
 	isUndirected{new bool{true}}, isValid{new bool{true}} {
@@ -96,7 +96,7 @@ Map::Map(
 
 // Copy constructor that uses a delegate constructor
 Map::Map(const Map& source)
-	: mainMap{new std::unordered_map<Territory, std::unordered_set<Territory>>{*source.mainMap}},
+	: gameMap{new std::unordered_map<Territory, std::unordered_set<Territory>>{*source.gameMap}},
 	continents{new std::unordered_map<std::string, std::unordered_set<Territory>>{*source.continents}},
 	continentBonuses{new std::unordered_map<std::string, int>{*source.continentBonuses}},
 	isUndirected{new bool{*source.isUndirected}}, isValid{new bool{*source.isValid}} {
@@ -105,7 +105,7 @@ Map::Map(const Map& source)
 
 // Destructor, deallocate memory for all the pointer data members
 Map::~Map() {
-	delete mainMap;
+	delete gameMap;
 	delete continents;
 	delete continentBonuses;
 	delete isUndirected;
@@ -116,12 +116,12 @@ Map::~Map() {
 // Copy assignment operator overload
 Map& Map::operator=(const Map& rhs) {
 	if (this != &rhs) {
-		delete mainMap;
+		delete gameMap;
 		delete continents;
 		delete continentBonuses;
 		delete isUndirected;
 		delete isValid;
-		mainMap = new std::unordered_map<Territory, std::unordered_set<Territory>>{*rhs.mainMap};
+		gameMap = new std::unordered_map<Territory, std::unordered_set<Territory>>{*rhs.gameMap};
 		continents = new std::unordered_map<std::string, std::unordered_set<Territory>>{*rhs.continents};
 		continentBonuses = new std::unordered_map<std::string, int>{*rhs.continentBonuses};
 		isUndirected = new bool{*rhs.isUndirected};
@@ -132,9 +132,9 @@ Map& Map::operator=(const Map& rhs) {
 
 // Stream insertion operator overload
 std::ostream& operator<<(std::ostream& os, const Map& obj) {
-	if (!obj.getMainMap().empty()) {
+	if (!obj.getGameMap().empty()) {
 		os << "[Territories]" << std::endl;
-		for (const auto& territory : obj.getMainMap()) {
+		for (const auto& territory : obj.getGameMap()) {
 			os << territory.first << " : - ";
 			for (const auto& adjacent_territory : territory.second) {
 				os << adjacent_territory << " - ";
@@ -156,8 +156,8 @@ std::ostream& operator<<(std::ostream& os, const Map& obj) {
 }
 
 // Getters
-std::unordered_map<Territory, std::unordered_set<Territory>>& Map::getMainMap() const {
-	return *mainMap;
+std::unordered_map<Territory, std::unordered_set<Territory>>& Map::getGameMap() const {
+	return *gameMap;
 }
 
 std::unordered_map<std::string, std::unordered_set<Territory>>& Map::getContinents() const {
@@ -169,16 +169,16 @@ std::unordered_map<std::string, int>& Map::getContinentBonuses() const {
 }
 
 // Depth-first-search to check if the main map is a graph that's connected and undirected (every connection is bidirectional)
-void Map::dfsMainMap(const Territory& t, std::unordered_map<Territory, std::unordered_set<Territory>>& mainMap, std::unordered_set<Territory>& visited) {
+void Map::dfsgameMap(const Territory& t, std::unordered_map<Territory, std::unordered_set<Territory>>& gameMap, std::unordered_set<Territory>& visited) {
 	visited.insert(t);
-	for (const Territory& neighbor : mainMap[t]) {
+	for (const Territory& neighbor : gameMap[t]) {
 		// Checks to see if t's neighbor has t as a neighbor
-		if (mainMap[neighbor].find(t) == mainMap[neighbor].end()) {
+		if (gameMap[neighbor].find(t) == gameMap[neighbor].end()) {
 			std::cout << neighbor << " doesn't have " << t << " as an edge, but " << t << " has " << neighbor << " as an edge." << std::endl;
 			*isUndirected = false;
 		}
 		if (visited.find(neighbor) == visited.end()) {
-			dfsMainMap(neighbor, mainMap, visited);
+			dfsgameMap(neighbor, gameMap, visited);
 		}
 	}
 }
@@ -186,13 +186,13 @@ void Map::dfsMainMap(const Territory& t, std::unordered_map<Territory, std::unor
 // Depth-first-search to check if territories in a continent are connected to eachother
 void Map::dfsContinents(const std::pair<std::string, std::unordered_set<Territory>>& continent,
 	const Territory& t,
-	std::unordered_map<Territory, std::unordered_set<Territory>>& mainMap,
+	std::unordered_map<Territory, std::unordered_set<Territory>>& gameMap,
 	std::unordered_set<Territory>& visited) {
 	visited.insert(t);
-	for (const Territory& neighbor : mainMap[t]) {
+	for (const Territory& neighbor : gameMap[t]) {
 		// skip any neighbors that are not in the continent, since we're checking connectivity between the continent's territories alone
 		if (visited.find(neighbor) == visited.end() && continent.second.find(neighbor) != continent.second.end()) {
-			dfsContinents(continent, neighbor, mainMap, visited);
+			dfsContinents(continent, neighbor, gameMap, visited);
 		}
 	}
 }
@@ -203,15 +203,15 @@ void Map::dfsContinents(const std::pair<std::string, std::unordered_set<Territor
 // 3) each country belongs to one and only one continent.
 bool Map::validate() {
 	// Verify if the map is empty
-	if (mainMap->empty()) {
+	if (gameMap->empty()) {
 		std::cerr << "Map is invalid - Empty map" << std::endl;
 		return false;
 	}
 
 	// Verify if the map is a connected undirected graph 
 	std::unordered_set<Territory>* visited{new std::unordered_set<Territory>};
-	dfsMainMap(mainMap->begin()->first, *mainMap, *visited);
-	if (!(*isUndirected && visited->size() == mainMap->size())) {
+	dfsgameMap(gameMap->begin()->first, *gameMap, *visited);
+	if (!(*isUndirected && visited->size() == gameMap->size())) {
 		std::cerr << "Map is invalid - Not a connected undirected graph" << std::endl;
 		return false;
 	}
@@ -225,7 +225,7 @@ bool Map::validate() {
 	// Verify if each continent is a connected subgraph
 	for (const auto& continent : *continents) {
 		visited->clear();
-		dfsContinents(continent, *continent.second.begin(), *mainMap, *visited);
+		dfsContinents(continent, *continent.second.begin(), *gameMap, *visited);
 		if (!(visited->size() == continent.second.size())) {
 			std::cerr << "Continent is invalid - Not a connected subgraph" << std::endl;
 			return false;
@@ -249,7 +249,7 @@ bool Map::validate() {
 	}
 
 	// Verify that each territory belongs to a continent
-	if (totalTerritories != mainMap->size()) {
+	if (totalTerritories != gameMap->size()) {
 		std::cerr << "Invalid Continents - Territory doesn't belong to a continent" << std::endl;
 		return false;
 	}
@@ -316,7 +316,7 @@ MapLoader::MapLoader(std::string filepath)
 					t_edges.insert(t_e);
 				}
 
-				map->getMainMap().insert(std::make_pair(t, t_edges));
+				map->getGameMap().insert(std::make_pair(t, t_edges));
 				map->getContinents()[continent].insert(t);
 			}
 			
@@ -341,9 +341,7 @@ MapLoader::MapLoader(std::string filepath)
 	// If not valid, delete the data
 	if (!isValid) {
 		map->getContinents().clear();
-		map->getMainMap().clear();
-	} else {
-		std::cout << *map << std::endl;
+		map->getGameMap().clear();
 	}
 	// std::cout << "Called Maploader parameterized constructor" << std::endl;
 }

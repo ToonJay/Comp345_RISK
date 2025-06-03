@@ -46,11 +46,11 @@ public:
 * Map class
 * Contains the main map implemented as a connected graph with territories as nodes, and edges being adjacency between territories
 * Also contains the continent map as connected subgraphs
-* Attributes: mainMap, continents, isUndirected and isValid
+* Attributes: gameMap, continents, isUndirected and isValid
 */ 
 class Map {
 private:
-	std::unordered_map<Territory, std::unordered_set<Territory>>* mainMap;
+	std::unordered_map<Territory, std::unordered_set<Territory>>* gameMap;
 	std::unordered_map<std::string, std::unordered_set<Territory>>* continents;
 	std::unordered_map<std::string, int>* continentBonuses;
 	bool* isUndirected;
@@ -61,7 +61,7 @@ public:
 	Map();
 	// Parameterized constructor
 	Map(
-		std::unordered_map<Territory, std::unordered_set<Territory>> mainMap,
+		std::unordered_map<Territory, std::unordered_set<Territory>> gameMap,
 		std::unordered_map<std::string, std::unordered_set<Territory>> continents,
 		std::unordered_map<std::string, int> continentBonuses
 	);
@@ -77,17 +77,18 @@ public:
 	friend std::ostream& operator<<(std::ostream& os, const Map& obj);
 
 	// Getters //
-	std::unordered_map<Territory, std::unordered_set<Territory>>& getMainMap() const;
+	std::unordered_map<Territory, std::unordered_set<Territory>>& getGameMap() const;
 	std::unordered_map<std::string, std::unordered_set<Territory>>& getContinents() const;
 	std::unordered_map<std::string, int>& getContinentBonuses() const;
 
 	// Validation function to see whether or not the game map is valid
 	bool validate();
-	void dfsMainMap(const Territory& t, std::unordered_map<Territory, std::unordered_set<Territory>>& mainMap, std::unordered_set<Territory>& visited);
+	void dfsgameMap(const Territory& t, std::unordered_map<Territory, std::unordered_set<Territory>>& gameMap, std::unordered_set<Territory>& visited);
 	void dfsContinents(const std::pair<std::string, std::unordered_set<Territory>>& continent,
 		const Territory& t, 
-		std::unordered_map<Territory, std::unordered_set<Territory>>& mainMap,
-		std::unordered_set<Territory>& visited);
+		std::unordered_map<Territory, std::unordered_set<Territory>>& gameMap,
+		std::unordered_set<Territory>& visited
+	);
 };
 
 /*
@@ -119,12 +120,9 @@ public:
 // Custom specialization of std::hash injected in namespace std
 // This is to make the Territory class hashable so it can be used for unordered_sets
 template<>
-struct std::hash<Territory>
-{
-	std::size_t operator()(const Territory& t) const noexcept
-	{
-		std::size_t h1 = std::hash<std::string>{}(t.getName());
-		return h1;
+struct std::hash<Territory> {
+	std::size_t operator()(const Territory& t) const noexcept {
+		return std::hash<std::string>{}(t.getName());
 	}
 };
 

@@ -6,3 +6,13 @@ addplayer Tommy
 addplayer Cook
 addplayer John
 gamestart
+loadmap ./src/Maps/World.map
+lol
+endissueorders
+endissueorders
+end
+lol
+endissueorders
+lo
+endissueorders
+end

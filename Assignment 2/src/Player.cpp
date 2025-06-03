@@ -2,6 +2,7 @@
 #include "Map.h"
 #include "Cards.h"
 #include "Orders.h"
+#include "CommandProcessing.h"
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Player class function definitions
@@ -80,27 +81,89 @@ OrdersList& Player::getPlayerOrdersList() const {
 	return *playerOrdersList;
 }
 
-// For now, returns an arbitrary list of pointers of territories to defend
-std::vector<Territory*> Player::toDefend() {
-	std::vector<Territory*> territoriesToDefend;
-	territoriesToDefend.emplace_back(new Territory{"qwer"});
-	territoriesToDefend.emplace_back(new Territory{"asdf"});
-	territoriesToDefend.emplace_back(new Territory{"loopas"});
-	return territoriesToDefend;
+// For now, returns an arbitrary list of pointers of territories to attack
+std::unordered_set<const Territory*> Player::toAttack(CommandProcessor& cmdProcessor, const Map& gameMap) {
+	std::cout << "First, which territories would you like to attack?" << std::endl;
+	std::unordered_set<const Territory*> attackList;
+	std::string cmdString{""};
+
+	while (cmdString != "continue") {
+		std::cout << "\nEnter a territory name to add to your attack list or \"continue\" when you're done." << std::endl;
+		cmdString.clear();
+		cmdProcessor.getCommand();
+		std::istringstream iss{cmdProcessor.getCommandList().back().getCommand()};
+		iss >> cmdString;
+		if (cmdString != "continue") {
+			if (gameMap.getGameMap().find(Territory{cmdString}) != gameMap.getGameMap().end()) {
+				if (attackList.find(&gameMap.getGameMap().find(Territory{cmdString})->first) != attackList.end()) {
+					std::cout << "That territory is already in your attack list." << std::endl;
+				}
+				attackList.emplace(&gameMap.getGameMap().find(Territory{cmdString})->first);
+			} else {
+				std::cout << "That territory doesn't exist." << std::endl;
+			}
+		}
+	}
+	return attackList;
 }
 
-// For now, returns an arbitrary list of pointers of territories to attack
-std::vector<Territory*> Player::toAttack() {
-	std::vector<Territory*> territoriesToAttack;
-	territoriesToAttack.emplace_back(new Territory{"kekkles"});
-	territoriesToAttack.emplace_back(new Territory{"lesasdz"});
-	territoriesToAttack.emplace_back(new Territory{"polasdmk"});
-	return territoriesToAttack;
+// For now, returns an arbitrary list of pointers of territories to defend
+std::unordered_set<const Territory*> Player::toDefend(CommandProcessor& cmdProcessor, const Map& gameMap) {
+	std::cout << "\nNext, which territories would you like to defend?" << std::endl;
+	std::unordered_set<const Territory*> defendList;
+	std::string cmdString{""};
+
+	while (cmdString != "continue") {
+		std::cout << "\nEnter a territory name to add to your defend list or \"continue\" when you're done." << std::endl;
+		cmdString.clear();
+		cmdProcessor.getCommand();
+		std::istringstream iss{cmdProcessor.getCommandList().back().getCommand()};
+		iss >> cmdString;
+		if (cmdString != "continue") {
+			if (gameMap.getGameMap().find(Territory{cmdString}) != gameMap.getGameMap().end()) {
+				if (defendList.find(&gameMap.getGameMap().find(Territory{cmdString})->first) != defendList.end()) {
+					std::cout << "That territory is already in your defend list." << std::endl;
+				}
+				defendList.emplace(&gameMap.getGameMap().find(Territory{cmdString})->first);
+			} else {
+				std::cout << "That territory doesn't exist." << std::endl;
+			}
+		}
+	}
+	return defendList;
 }
 
 // Adds order to player's list of orders (will probably have a parameter later)
-void Player::issueOrder() {
-	playerOrdersList->addOrder();
+void Player::issueOrder(CommandProcessor& cmdProcessor, const Map& gameMap) {
+	std::cout << std::endl << *playerName << "'s turn to issue orders." << std::endl;
+	std::unordered_set<const Territory*> attackList;
+	attackList = toAttack(cmdProcessor, gameMap);
+	std::unordered_set<const Territory*> defendList;
+	defendList = toDefend(cmdProcessor, gameMap);
+	std::string cmdString{""};
+
+	std::cout << "Your attack list:" << std::endl;
+	for (const Territory* t : attackList) {
+		std::cout << *t << std::endl;
+	}
+
+	std::cout << "Your defend list:" << std::endl;
+	for (const Territory* t : defendList) {
+		std::cout << *t << std::endl;
+	}
+
+	while (cmdString != "endissueorders") {
+		std::cout << "\nWhat type of order do you want to issue?" << std::endl;
+		cmdString.clear();
+		cmdProcessor.getCommand();
+		std::istringstream iss{cmdProcessor.getCommandList().back().getCommand()};
+		iss >> cmdString;
+		if (*reinforcementPool > 0 && cmdString != "deploy") {
+			std::cout << "You have " << *reinforcementPool << " left to deploy." << std::endl;
+		} else {
+			playerOrdersList->addOrder();
+		}
+	}
 }
 
 // Stream insertion operator

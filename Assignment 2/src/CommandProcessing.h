@@ -46,10 +46,10 @@ class CommandProcessor {
 private:
 	std::list<Command>* commandList;
 	// read command from console and store into a string
-	virtual void readCommand();
+	virtual void readCommand() const;
 protected:
 	// save command as a Command object
-	void saveCommand(std::string& command);
+	void saveCommand(std::string& command) const;
 public:
 	//--Constructors--//
 	// Default constructor
@@ -69,7 +69,7 @@ public:
 	std::list<Command>& getCommandList() const;
 
 	// Creates, stores and returns Command object
-	Command& getCommand();
+	Command& getCommand() const;
 
 	// Validates whether or not a command is valid during the current game state
 	bool validate(Command& command, GameState& gameState) const;
@@ -118,7 +118,7 @@ class FileCommandProcessorAdapter : public CommandProcessor {
 private:
 	FileLineReader* flr;
 	// read command from file
-	virtual void readCommand() override;
+	virtual void readCommand() const override;
 public:
 	//--Constructors--//
 	// Parameterized constructor

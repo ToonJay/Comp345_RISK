@@ -8,6 +8,8 @@
 class Territory;
 class Hand;
 class OrdersList;
+class CommandProcessor;
+class Map;
 
 /*
 * Player class
@@ -46,12 +48,12 @@ public:
 	Hand& getPlayerHand() const;
 	OrdersList& getPlayerOrdersList() const;
 
-	// Returns list of pointers of territories to defend
-	std::vector<Territory*> toDefend();
 	// Returns list of pointers of territories to attack
-	std::vector<Territory*> toAttack();
+	std::unordered_set<const Territory*> toAttack(CommandProcessor& cmdProcessor, const Map& gameMap);
+	// Returns list of pointers of territories to defend
+	std::unordered_set<const Territory*> toDefend(CommandProcessor& cmdProcessor, const Map& gameMap);
 	// Adds order to player's list of orders
-	void issueOrder();
+	void issueOrder(CommandProcessor& cmdProcessor, const Map& gameMap);
 };
 
 #endif

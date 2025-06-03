@@ -47,7 +47,7 @@ public:
 	//--Game phases--//
 	// Where the game is setup
 	void startupPhase();
-	// Where the game is played once started
+	// Where the game is played once started. Keeps looping until the end of the game.
 	void mainGameLoop();
 	void reinforcementPhase();
 	void issueOrdersPhase();

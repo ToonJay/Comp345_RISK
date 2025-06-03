@@ -102,6 +102,8 @@ void GameEngine::transition(const Command& command) {
 	}
 }
 
+// Where the map is loaded and validated; where the players are added; and where territory distribution is done.
+// This is where the game setup happens and it can be done either via console or file.
 void GameEngine::startupPhase() {
 	GameState& gs{getGameState()};
 	std::list<Command>& commandList{cmdProcessor->getCommandList()};
@@ -173,8 +175,7 @@ void GameEngine::startupPhase() {
 				}
 			} else if (cmdString == "gamestart") {
 				if (playersList->size() > 1) {
-
-					size_t numOfPlayerTerritories{map->getMainMap().size() / 2 - map->getMainMap().size() / 2 % playersList->size()};
+					size_t numOfPlayerTerritories{map->getGameMap().size() / 2 - map->getGameMap().size() / 2 % playersList->size()};
 					std::cout << numOfPlayerTerritories << std::endl;
 					std::vector<int> territoryDistribution;
 					for (size_t i = 0; i < numOfPlayerTerritories; i++) {
@@ -183,10 +184,11 @@ void GameEngine::startupPhase() {
 
 					std::srand(unsigned(std::time(0)));
 					std::random_shuffle(playersList->begin(), playersList->end());
+					std::srand(unsigned(std::time(0)));
 					std::random_shuffle(territoryDistribution.begin(), territoryDistribution.end());
 
 					int count{0};
-					for (const auto& territory : map->getMainMap()) {
+					for (const auto& territory : map->getGameMap()) {
 						if (count < numOfPlayerTerritories) {
 							playersList->at(territoryDistribution.at(count)).getPlayerTerritories().emplace(&territory.first);
 							territory.first.getOwner() = playersList->at(territoryDistribution.at(count)).getPlayerName();
@@ -210,15 +212,21 @@ void GameEngine::startupPhase() {
 			std::cout << std::endl << cmd << std::endl;
 		}
 	}
+	cmdProcessor = new CommandProcessor;
 	mainGameLoop();
 }
 
+// The main game loop.
+// The game loops through these three phases until it's done.
 void GameEngine::mainGameLoop() {
 	reinforcementPhase();
 	issueOrdersPhase();
 	executeOrdersPhase();
 }
 
+// This is where players get their reinforcements.
+// The reinforcements they'll get is the number of territories divided by 3, with a minimum of 3.
+// They also get extra reinforcements if they own a complete continent depending on the continent's bonus value.
 void GameEngine::reinforcementPhase() {
 	std::cout << "Reinforcement Phase\n" << std::endl;
 
@@ -233,11 +241,11 @@ void GameEngine::reinforcementPhase() {
 	}
 
 	for (const auto& continent : map->getContinents()) {
-		std::string owner{map->getMainMap().find(*continent.second.begin())->first.getOwner()};
+		std::string owner{map->getGameMap().find(*continent.second.begin())->first.getOwner()};
 		if (owner != "Neutral") {
 			bool allSameOwner{true};
 			for (const auto& territory : continent.second) {
-				if (owner != map->getMainMap().find(territory)->first.getOwner()) {
+				if (owner != map->getGameMap().find(territory)->first.getOwner()) {
 					allSameOwner = false;
 					break;
 				}
@@ -260,8 +268,45 @@ void GameEngine::reinforcementPhase() {
 	}
 }
 
+// This is where players issue all their orders in round-robin fashion until each player has no more orders to give
 void GameEngine::issueOrdersPhase() {
+	std::cout << "Issue Orders Phase\n" << std::endl;
+	std::vector<bool> finishedOrders(playersList->size(), false);
+	int endCount{0};
+
+	while (endCount < playersList->size()) {
+		for (size_t i = 0; i < playersList->size(); i++) {
+			if (finishedOrders.at(i) == false) {
+				playersList->at(i).issueOrder(*cmdProcessor, *map);
+				if (cmdProcessor->getCommandList().back().getCommand() == "endissueorders") {
+					finishedOrders.at(i) = true;
+					endCount++;
+				}
+			}
+		}
+	}
+	std::cout << std::endl;
 }
 
+// This is where the players' orders get validated and executed in round-robin fashion
+// However, it will first go through all deploy orders from all players first
 void GameEngine::executeOrdersPhase() {
+	std::cout << "Execute Orders Phase\n" << std::endl;
+	std::vector<bool> finishedOrders(playersList->size(), false);
+	int endCount{0};
+	while (endCount < playersList->size()) {
+		for (size_t i = 0; i < playersList->size(); i++) {
+			if (finishedOrders.at(i) == false) {
+				Player& p{playersList->at(i)};
+				std::cout << p.getPlayerName() << " Order:" << std::endl;
+				std::cout << **p.getPlayerOrdersList().getOrders().begin() << std::endl;
+				p.getPlayerOrdersList().remove(0);
+				if (p.getPlayerOrdersList().getOrders().size() == 0) {
+					finishedOrders.at(i) = true;
+					endCount++;
+				}
+			}
+		}
+	}
+	exit;
 }

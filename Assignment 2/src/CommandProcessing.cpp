@@ -62,14 +62,14 @@ void Command::saveEffect(const std::string& effect) {
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // Gets command from the console as a string
-void CommandProcessor::readCommand() {
+void CommandProcessor::readCommand() const {
 	std::string command;
 	std::getline(std::cin, command);
 	saveCommand(command);
 }
 
 // Stores command inside a list of Command objects
-void CommandProcessor::saveCommand(std::string& command) {
+void CommandProcessor::saveCommand(std::string& command) const {
 	Command c{command};
 	commandList->emplace_back(c);
 }
@@ -116,7 +116,7 @@ std::list<Command>& CommandProcessor::getCommandList() const {
 
 // Creates, stores and returns a Command object
 // Public method for GameEngine and Player to be able to get a Command object
-Command& CommandProcessor::getCommand() {
+Command& CommandProcessor::getCommand() const {
 	readCommand();
 	return getCommandList().back();
 }
@@ -267,7 +267,7 @@ void FileLineReader::readLineFromFile() {
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // read command from file
-void FileCommandProcessorAdapter::readCommand() {
+void FileCommandProcessorAdapter::readCommand() const {
 	flr->readLineFromFile();
 	saveCommand(flr->getLine());
 }
