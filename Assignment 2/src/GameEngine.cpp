@@ -6,14 +6,14 @@
 
 // Default constructor
 GameEngine::GameEngine()
-	: gameState{new GameState{GameState::Start}}, cmdProcessor{new CommandProcessor}, map{new Map}, deck{new Deck}, playersList{new std::vector<Player>} {
+	: gameState{new GameState{GameState::Start}}, cmdProcessor{new CommandProcessor}, deck{new Deck}, playersList{new std::vector<Player>} {
 	// std::cout << "Called GameEngine default constructor" << std::endl;
 }
 
 // Copy constructor
 GameEngine::GameEngine(const GameEngine& source)
 	: gameState{new GameState{*source.gameState}}, cmdProcessor{new CommandProcessor{*source.cmdProcessor}},
-	map{new Map{*source.map}}, deck{new Deck{*source.deck}}, playersList{new std::vector<Player>{*source.playersList}} {
+	mapLoader{new MapLoader{*source.mapLoader}}, deck{new Deck{*source.deck}}, playersList{new std::vector<Player>{*source.playersList}} {
 	// std::cout << "Called GameEngine destructor" << std::endl;
 }
 
@@ -50,11 +50,19 @@ std::ostream& operator<<(std::ostream& os, const GameEngine& obj) {
 }
 
 // Getters
-GameState& GameEngine::getGameState() const {
+GameState& GameEngine::getGameState() {
 	return *gameState;
 }
 
-CommandProcessor& GameEngine::getCommandProcessor() const {
+CommandProcessor& GameEngine::getCommandProcessor() {
+	return *cmdProcessor;
+}
+
+const GameState& GameEngine::getGameState() const {
+	return *gameState;
+}
+
+const CommandProcessor& GameEngine::getCommandProcessor() const {
 	return *cmdProcessor;
 }
 
@@ -102,7 +110,7 @@ void GameEngine::transition(const Command& command) {
 	}
 }
 
-// Where the map is loaded and validated; where the players are added; and where territory distribution is done.
+// Where the mapLoader is loaded and validated; where the players are added; and where territory distribution is done.
 // This is where the game setup happens and it can be done either via console or file.
 void GameEngine::startupPhase() {
 	GameState& gs{getGameState()};
@@ -148,8 +156,7 @@ void GameEngine::startupPhase() {
 				cmdString.erase(0, 1);
 				std::ifstream file{cmdString};
 				if (file.is_open()) {
-					MapLoader mapLoader{cmdString};
-					*map = mapLoader.getMap();
+					mapLoader = new MapLoader{cmdString};
 					cmd.saveEffect("\"" + cmdString + "\" loaded successfully.");
 					transition(cmd);
 				} else {
@@ -157,7 +164,7 @@ void GameEngine::startupPhase() {
 				}
 				file.close();
 			} else if (cmdString == "validatemap") {
-				if (map->validate()) {
+				if (mapLoader->getMap().validate()) {
 					cmd.saveEffect("Map validated successfully.");
 					transition(cmd);
 				} else {
@@ -175,7 +182,7 @@ void GameEngine::startupPhase() {
 				}
 			} else if (cmdString == "gamestart") {
 				if (playersList->size() > 1) {
-					size_t numOfPlayerTerritories{map->getGameMap().size() / 2 - map->getGameMap().size() / 2 % playersList->size()};
+					size_t numOfPlayerTerritories{mapLoader->getMap().getGameMap().size() / 2 - mapLoader->getMap().getGameMap().size() / 2 % playersList->size()};
 					std::cout << numOfPlayerTerritories << std::endl;
 					std::vector<int> territoryDistribution;
 					for (size_t i = 0; i < numOfPlayerTerritories; i++) {
@@ -188,17 +195,17 @@ void GameEngine::startupPhase() {
 					std::random_shuffle(territoryDistribution.begin(), territoryDistribution.end());
 
 					int count{0};
-					for (const auto& territory : map->getGameMap()) {
+					for (auto& territory : mapLoader->getMap().getGameMap()) {
 						if (count < numOfPlayerTerritories) {
-							playersList->at(territoryDistribution.at(count)).getPlayerTerritories().emplace(&territory.first);
-							territory.first.getOwner() = playersList->at(territoryDistribution.at(count)).getPlayerName();
+							playersList->at(territoryDistribution.at(count)).getPlayerTerritories().insert(std::make_pair(territory.first->getName(), territory.first));
+							territory.first->getOwner() = playersList->at(territoryDistribution.at(count)).getPlayerName();
 							count++;
 						} else {
 							break;
 						}
 					}
 
-					for (const Player& p : *playersList) {
+					for (Player& p : *playersList) {
 						p.getReinforcementPool() = 50;
 						deck->draw(p.getPlayerHand());
 						deck->draw(p.getPlayerHand());
@@ -231,7 +238,7 @@ void GameEngine::reinforcementPhase() {
 	std::cout << "Reinforcement Phase\n" << std::endl;
 
 	int reinforcements;
-	for (const Player& p : *playersList) {
+	for (Player& p : *playersList) {
 		reinforcements = p.getPlayerTerritories().size() / 3;
 		if (reinforcements <= 3) {
 			p.getReinforcementPool() += 3;
@@ -240,12 +247,12 @@ void GameEngine::reinforcementPhase() {
 		}
 	}
 
-	for (const auto& continent : map->getContinents()) {
-		std::string owner{map->getGameMap().find(*continent.second.begin())->first.getOwner()};
+	for (const auto& continent : mapLoader->getMap().getContinents()) {
+		std::string owner{mapLoader->getMap().getGameMap().find(*continent.second.begin())->first->getOwner()};
 		if (owner != "Neutral") {
 			bool allSameOwner{true};
 			for (const auto& territory : continent.second) {
-				if (owner != map->getGameMap().find(territory)->first.getOwner()) {
+				if (owner != mapLoader->getMap().getGameMap().find(territory)->first->getOwner()) {
 					allSameOwner = false;
 					break;
 				}
@@ -253,10 +260,10 @@ void GameEngine::reinforcementPhase() {
 
 			if (allSameOwner) {
 				std::cout << "Continent of " << continent.first << " is fully owned by " << owner << std::endl;
-				std::cout << owner << " receives additional reinforcements of " << map->getContinentBonuses().at(continent.first) << std::endl;
-				for (const Player& player : *playersList) {
+				std::cout << owner << " receives additional reinforcements of " << mapLoader->getMap().getContinentBonuses().at(continent.first) << std::endl;
+				for (Player& player : *playersList) {
 					if (owner == player.getPlayerName()) {
-						player.getReinforcementPool() += map->getContinentBonuses().at(continent.first);
+						player.getReinforcementPool() += mapLoader->getMap().getContinentBonuses().at(continent.first);
 					}
 				}
 			}
@@ -277,7 +284,7 @@ void GameEngine::issueOrdersPhase() {
 	while (endCount < playersList->size()) {
 		for (size_t i = 0; i < playersList->size(); i++) {
 			if (finishedOrders.at(i) == false) {
-				playersList->at(i).issueOrder(*cmdProcessor, *map);
+				playersList->at(i).issueOrder(*cmdProcessor);
 				if (cmdProcessor->getCommandList().back().getCommand() == "endissueorders") {
 					finishedOrders.at(i) = true;
 					endCount++;

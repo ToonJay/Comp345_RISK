@@ -4,6 +4,7 @@
 #include <string>
 #include <vector>
 #include <unordered_set>
+#include <unordered_map>
 
 class Territory;
 class Hand;
@@ -19,7 +20,7 @@ class Player {
 private:
 	std::string* playerName;
 	int* reinforcementPool;
-	std::unordered_set<const Territory*>* playerTerritories;
+	std::unordered_map<std::string, Territory*>* playerTerritories;
 	Hand* playerHand;
 	OrdersList* playerOrdersList;
 public:
@@ -41,19 +42,24 @@ public:
 	// Stream insertion operator overload
 	friend std::ostream& operator<<(std::ostream& os, const Player& obj);
 
-	// Getters //
-	std::string& getPlayerName() const;
-	int& getReinforcementPool() const;
-	std::unordered_set<const Territory*>& getPlayerTerritories() const;
-	Hand& getPlayerHand() const;
-	OrdersList& getPlayerOrdersList() const;
+	//--Getters--//
+	std::string& getPlayerName();
+	int& getReinforcementPool();
+	std::unordered_map<std::string, Territory*>& getPlayerTerritories();
+	Hand& getPlayerHand();
+	OrdersList& getPlayerOrdersList();
+	const std::string& getPlayerName() const;
+	const int& getReinforcementPool() const;
+	const std::unordered_map<std::string, Territory*>& getPlayerTerritories() const;
+	const Hand& getPlayerHand() const;
+	const OrdersList& getPlayerOrdersList() const;
 
 	// Returns list of pointers of territories to attack
-	std::unordered_set<const Territory*> toAttack(CommandProcessor& cmdProcessor, const Map& gameMap);
+	std::unordered_set<std::string> toAttack(CommandProcessor& cmdProcessor);
 	// Returns list of pointers of territories to defend
-	std::unordered_set<const Territory*> toDefend(CommandProcessor& cmdProcessor, const Map& gameMap);
+	std::unordered_set<std::string> toDefend(CommandProcessor& cmdProcessor);
 	// Adds order to player's list of orders
-	void issueOrder(CommandProcessor& cmdProcessor, const Map& gameMap);
+	void issueOrder(CommandProcessor& cmdProcessor);
 };
 
 #endif

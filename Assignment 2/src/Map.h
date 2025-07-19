@@ -36,13 +36,16 @@ public:
 	// Stream insertion
 	friend std::ostream& operator<<(std::ostream& os, const Territory& obj);
 
-	// Getters //
-	std::string& getName() const;
-	int& getNumOfArmies() const;
-	std::string& getOwner() const;
+	//--Getters--//
+	std::string& getName();
+	int& getNumOfArmies();
+	std::string& getOwner();
+	const std::string& getName() const;
+	const int& getNumOfArmies() const;
+	const std::string& getOwner() const;
 };
 
-/* 
+/*
 * Map class
 * Contains the main map implemented as a connected graph with territories as nodes, and edges being adjacency between territories
 * Also contains the continent map as connected subgraphs
@@ -50,8 +53,9 @@ public:
 */ 
 class Map {
 private:
-	std::unordered_map<Territory, std::unordered_set<Territory>>* gameMap;
-	std::unordered_map<std::string, std::unordered_set<Territory>>* continents;
+	std::unordered_map<std::string, Territory>* territories;
+	std::unordered_map<Territory*, std::unordered_set<Territory*>>* gameMap;
+	std::unordered_map<std::string, std::unordered_set<Territory*>>* continents;
 	std::unordered_map<std::string, int>* continentBonuses;
 	bool* isUndirected;
 	bool* isValid;
@@ -61,8 +65,9 @@ public:
 	Map();
 	// Parameterized constructor
 	Map(
-		std::unordered_map<Territory, std::unordered_set<Territory>> gameMap,
-		std::unordered_map<std::string, std::unordered_set<Territory>> continents,
+		std::unordered_map<std::string, Territory> territories,
+		std::unordered_map<Territory*, std::unordered_set<Territory*>> gameMap,
+		std::unordered_map<std::string, std::unordered_set<Territory*>> continents,
 		std::unordered_map<std::string, int> continentBonuses
 	);
 	// Copy constructor
@@ -76,18 +81,23 @@ public:
 	// Stream insertion operator overload
 	friend std::ostream& operator<<(std::ostream& os, const Map& obj);
 
-	// Getters //
-	std::unordered_map<Territory, std::unordered_set<Territory>>& getGameMap() const;
-	std::unordered_map<std::string, std::unordered_set<Territory>>& getContinents() const;
-	std::unordered_map<std::string, int>& getContinentBonuses() const;
+	//--Getters--//
+	std::unordered_map<std::string, Territory>& getTerritories();
+	std::unordered_map<Territory*, std::unordered_set<Territory*>>& getGameMap();
+	std::unordered_map<std::string, std::unordered_set<Territory*>>& getContinents();
+	std::unordered_map<std::string, int>& getContinentBonuses();
+	const std::unordered_map<std::string, Territory>& getTerritories() const;
+	const std::unordered_map<Territory*, std::unordered_set<Territory*>>& getGameMap() const;
+	const std::unordered_map<std::string, std::unordered_set<Territory*>>& getContinents() const;
+	const std::unordered_map<std::string, int>& getContinentBonuses() const;
 
 	// Validation function to see whether or not the game map is valid
 	bool validate();
-	void dfsgameMap(const Territory& t, std::unordered_map<Territory, std::unordered_set<Territory>>& gameMap, std::unordered_set<Territory>& visited);
-	void dfsContinents(const std::pair<std::string, std::unordered_set<Territory>>& continent,
-		const Territory& t, 
-		std::unordered_map<Territory, std::unordered_set<Territory>>& gameMap,
-		std::unordered_set<Territory>& visited
+	void dfsgameMap(Territory* const t, std::unordered_map<Territory*, std::unordered_set<Territory*>>& gameMap, std::unordered_set<std::string>& visited);
+	void dfsContinents(const std::pair<std::string, std::unordered_set<Territory*>>& continent,
+		Territory* const t, 
+		std::unordered_map<Territory*, std::unordered_set<Territory*>>& gameMap,
+		std::unordered_set<std::string>& visited
 	);
 };
 
@@ -113,8 +123,9 @@ public:
 	// Stream insertion operator overload
 	friend std::ostream& operator<<(std::ostream& os, const MapLoader& obj);
 
-	// Getter //
-	Map& getMap() const;
+	//--Getters--//
+	Map& getMap();
+	const Map& getMap() const;
 };
 
 // Custom specialization of std::hash injected in namespace std

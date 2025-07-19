@@ -19,7 +19,7 @@ class GameEngine {
 private:
 	GameState* gameState;
 	CommandProcessor* cmdProcessor;
-	Map* map;
+	MapLoader* mapLoader;
 	Deck* deck;
 	std::vector<Player>* playersList;
 public:
@@ -37,9 +37,11 @@ public:
 	// Stream insertion operator overload
 	friend std::ostream& operator<<(std::ostream& os, const GameEngine& obj);
 
-	// Getters //
-	GameState& getGameState() const;
-	CommandProcessor& getCommandProcessor() const;
+	//--Getters--//
+	GameState& getGameState();
+	CommandProcessor& getCommandProcessor();
+	const GameState& getGameState() const;
+	const CommandProcessor& getCommandProcessor() const;
 
 	// Transitions from one gameState to the next
 	void transition(const Command& command);
