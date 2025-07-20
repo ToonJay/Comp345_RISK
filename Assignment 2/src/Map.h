@@ -37,12 +37,15 @@ public:
 	friend std::ostream& operator<<(std::ostream& os, const Territory& obj);
 
 	//--Getters--//
-	std::string& getName();
-	int& getNumOfArmies();
-	std::string& getOwner();
 	const std::string& getName() const;
 	const int& getNumOfArmies() const;
 	const std::string& getOwner() const;
+
+	//--Mutators--//
+	void setOwner(const std::string& newOwner);
+	void setNumOfArmies(int numOfArmies);
+	void addArmies(int amount);
+	void removeArmies(int amount);
 };
 
 /*
@@ -82,23 +85,26 @@ public:
 	friend std::ostream& operator<<(std::ostream& os, const Map& obj);
 
 	//--Getters--//
-	std::unordered_map<std::string, Territory>& getTerritories();
-	std::unordered_map<Territory*, std::unordered_set<Territory*>>& getGameMap();
-	std::unordered_map<std::string, std::unordered_set<Territory*>>& getContinents();
-	std::unordered_map<std::string, int>& getContinentBonuses();
+	Territory& getTerritoryByName(const std::string& name);
 	const std::unordered_map<std::string, Territory>& getTerritories() const;
 	const std::unordered_map<Territory*, std::unordered_set<Territory*>>& getGameMap() const;
 	const std::unordered_map<std::string, std::unordered_set<Territory*>>& getContinents() const;
 	const std::unordered_map<std::string, int>& getContinentBonuses() const;
 
+	//--Mutators--//
+	void addTerritory(const std::string& name);
+	void addContinent(const std::string& continent, int bonus);
+	void addNeighbor(Territory* const territory, Territory* const neighbor);
+	void assignToContinent(const std::string& continent, Territory* const t);
+
 	// Validation function to see whether or not the game map is valid
-	bool validate();
-	void dfsgameMap(Territory* const t, std::unordered_map<Territory*, std::unordered_set<Territory*>>& gameMap, std::unordered_set<std::string>& visited);
+	bool validate() const;
+	void dfsgameMap(Territory* const t, std::unordered_map<Territory*, std::unordered_set<Territory*>>& gameMap, std::unordered_set<std::string>& visited) const;
 	void dfsContinents(const std::pair<std::string, std::unordered_set<Territory*>>& continent,
 		Territory* const t, 
 		std::unordered_map<Territory*, std::unordered_set<Territory*>>& gameMap,
 		std::unordered_set<std::string>& visited
-	);
+	) const;
 };
 
 /*

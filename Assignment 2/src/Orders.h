@@ -156,11 +156,12 @@ public:
 	// Stream insertion operator overload
 	friend std::ostream& operator<<(std::ostream& os, const OrdersList& obj);
 
-	// Getter //
-	std::vector<Order*>& getOrders() const;
+	//--Getter--//
+	const std::vector<Order*>& getOrders() const;
 
+	//--Mutators--//
 	// Add order to player's OrdersList
-	void addOrder();
+	void addOrder(Order* order);
 	// Remove order from orders
 	void remove(int index);
 	// Moves an order to a specific index of orders

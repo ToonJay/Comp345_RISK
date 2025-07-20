@@ -43,11 +43,11 @@ std::ostream& operator<<(std::ostream& os, const Command& obj) {
 }
 
 // Getters
-std::string& Command::getCommand() const {
+const std::string& Command::getCommand() const {
 	return *command;
 }
 
-std::string& Command::getEffect() const {
+const std::string& Command::getEffect() const {
 	return *effect;
 }
 
@@ -62,16 +62,15 @@ void Command::saveEffect(const std::string& effect) {
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // Gets command from the console as a string
-void CommandProcessor::readCommand() const {
+void CommandProcessor::readCommand() {
 	std::string command;
 	std::getline(std::cin, command);
 	saveCommand(command);
 }
 
 // Stores command inside a list of Command objects
-void CommandProcessor::saveCommand(std::string& command) const {
-	Command c{command};
-	commandList->emplace_back(c);
+void CommandProcessor::saveCommand(const std::string& command) {
+	commandList->emplace_back(command);
 }
 
 // Default constructor
@@ -110,15 +109,15 @@ std::ostream& operator<<(std::ostream& os, const CommandProcessor& obj) {
 }
 
 // Getter
-std::list<Command>& CommandProcessor::getCommandList() const {
+const std::list<Command>& CommandProcessor::getCommandList() const {
 	return *commandList;
 }
 
 // Creates, stores and returns a Command object
 // Public method for GameEngine and Player to be able to get a Command object
-Command& CommandProcessor::getCommand() const {
+Command& CommandProcessor::getCommand() {
 	readCommand();
-	return getCommandList().back();
+	return commandList->back();
 }
 
 // Validates whether or not a command is valid during the current game state
@@ -231,6 +230,7 @@ FileLineReader::~FileLineReader() {
 FileLineReader& FileLineReader::operator=(const FileLineReader& rhs) {
 	if (this != &rhs) {
 		*fileName = *rhs.fileName;
+		delete file;
 		file = new std::ifstream{*rhs.fileName};
 		*line = *rhs.line;
 	}
@@ -244,22 +244,32 @@ std::ostream& operator<<(std::ostream& os, const FileLineReader& obj) {
 	return os;
 }
 
-// Getters
-std::string& FileLineReader::getFileName() const {
-	return *fileName;
-}
 
-std::ifstream& FileLineReader::getFile() const {
+
+// Getters
+std::ifstream& FileLineReader::getFile() {
 	return *file;
 }
 
-std::string& FileLineReader::getLine() const {
+std::string& FileLineReader::getLine() {
+	return *line;
+}
+
+const std::string& FileLineReader::getFileName() const {
+	return *fileName;
+}
+
+const std::ifstream& FileLineReader::getFile() const {
+	return *file;
+}
+
+const std::string& FileLineReader::getLine() const {
 	return *line;
 }
 
 // read line from file
 void FileLineReader::readLineFromFile() {
-	std::getline(getFile(), getLine());
+	std::getline(*file, *line);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -267,7 +277,7 @@ void FileLineReader::readLineFromFile() {
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // read command from file
-void FileCommandProcessorAdapter::readCommand() const {
+void FileCommandProcessorAdapter::readCommand() {
 	flr->readLineFromFile();
 	saveCommand(flr->getLine());
 }
@@ -309,6 +319,6 @@ std::ostream& operator<<(std::ostream& os, const FileCommandProcessorAdapter& ob
 }
 
 // Getter
-FileLineReader& FileCommandProcessorAdapter::getFileLineReader() const {
+const FileLineReader& FileCommandProcessorAdapter::getFileLineReader() const {
 	return *flr;
 }

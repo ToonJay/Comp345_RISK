@@ -61,18 +61,6 @@ bool Player::operator==(const Player& rhs) const {
 }
 
 // Getters
-std::string& Player::getPlayerName() {
-	return *playerName;
-}
-
-int& Player::getReinforcementPool() {
-	return *reinforcementPool;
-}
-
-std::unordered_map<std::string, Territory*>& Player::getPlayerTerritories() {
-	return *playerTerritories;
-}
-
 Hand& Player::getPlayerHand() {
 	return *playerHand;
 }
@@ -101,6 +89,30 @@ const OrdersList& Player::getPlayerOrdersList() const {
 	return *playerOrdersList;
 }
 
+// Mutators
+void Player::setReinforcementPool(int reinforcementPool) {
+	*this->reinforcementPool = (reinforcementPool >= 0) ? reinforcementPool : 0;
+}
+
+void Player::addReinforcements(int numOfUnits) {
+	*this->reinforcementPool += numOfUnits;
+}
+
+void Player::sendReinforcements(int numOfUnits) {
+	*this->reinforcementPool -= numOfUnits;
+	if (*this->reinforcementPool < 0) {
+		*this->reinforcementPool = 0;
+	}
+}
+
+void Player::addTerritory(Territory* const territory) {
+	(*playerTerritories)[territory->getName()] = territory;
+}
+
+void Player::removeTerritory(Territory* const territory) {
+	(*playerTerritories).erase(territory->getName());
+}
+
 // For now, returns an arbitrary list of pointers of territories to attack
 std::unordered_set<std::string> Player::toAttack(CommandProcessor& cmdProcessor) {
 	std::cout << "First, which territories would you like to attack?" << std::endl;
@@ -114,7 +126,6 @@ std::unordered_set<std::string> Player::toAttack(CommandProcessor& cmdProcessor)
 		std::istringstream iss{cmdProcessor.getCommandList().back().getCommand()};
 		iss >> cmdString;
 		if (cmdString != "continue") {
-
 			if (attackList.find(cmdString) != attackList.end()) {
 				std::cout << "That territory is already in your attack list." << std::endl;
 			} else {
@@ -142,7 +153,7 @@ std::unordered_set<std::string> Player::toDefend(CommandProcessor& cmdProcessor)
 				std::cout << "That territory is already in your defend list." << std::endl;
 			} else {
 				defendList.insert(cmdString);
-			} 
+			}
 		}
 	}
 	return defendList;
@@ -176,7 +187,7 @@ void Player::issueOrder(CommandProcessor& cmdProcessor) {
 		if (*reinforcementPool > 0 && cmdString != "deploy") {
 			std::cout << "You have " << *reinforcementPool << " left to deploy." << std::endl;
 		} else {
-			playerOrdersList->addOrder();
+			playerOrdersList->addOrder(new Deploy);
 		}
 	}
 }

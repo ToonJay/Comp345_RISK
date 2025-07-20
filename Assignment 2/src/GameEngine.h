@@ -2,7 +2,7 @@
 #define _GAMEENGINE_H_
 #include <iostream>
 #include <string>
-#include <algorithm>
+#include <random>
 #include "Player.h"
 #include "Map.h"
 #include "Cards.h"

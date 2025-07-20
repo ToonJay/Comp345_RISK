@@ -30,9 +30,9 @@ public:
 	// Stream insertion operator overload
 	friend std::ostream& operator<<(std::ostream& os, const Command& obj);
 
-	// Getters //
-	std::string& getCommand() const;
-	std::string& getEffect() const;
+	//--Getters--//
+	const std::string& getCommand() const;
+	const std::string& getEffect() const;
 
 	// Store effect of an executed command as a string
 	void saveEffect(const std::string& effect);
@@ -46,10 +46,10 @@ class CommandProcessor {
 private:
 	std::list<Command>* commandList;
 	// read command from console and store into a string
-	virtual void readCommand() const;
+	virtual void readCommand();
 protected:
 	// save command as a Command object
-	void saveCommand(std::string& command) const;
+	void saveCommand(const std::string& command);
 public:
 	//--Constructors--//
 	// Default constructor
@@ -65,11 +65,11 @@ public:
 	// Stream insertion operator overload
 	friend std::ostream& operator<<(std::ostream& os, const CommandProcessor& obj);
 
-	// Getter //
-	std::list<Command>& getCommandList() const;
+	//--Getter--//
+	const std::list<Command>& getCommandList() const;
 
 	// Creates, stores and returns Command object
-	Command& getCommand() const;
+	Command& getCommand();
 
 	// Validates whether or not a command is valid during the current game state
 	bool validate(Command& command, GameState& gameState) const;
@@ -100,10 +100,12 @@ public:
 	// Stream insertion overpeator overload
 	friend std::ostream& operator<<(std::ostream& os, const FileLineReader& obj);
 
-	// Getters //
-	std::string& getFileName() const;
-	std::ifstream& getFile() const;
-	std::string& getLine() const;
+	//--Getters--//
+	std::ifstream& getFile();
+	std::string& getLine();
+	const std::string& getFileName() const;
+	const std::ifstream& getFile() const;
+	const std::string& getLine() const;
 
 	// read line from file
 	void readLineFromFile();
@@ -118,7 +120,7 @@ class FileCommandProcessorAdapter : public CommandProcessor {
 private:
 	FileLineReader* flr;
 	// read command from file
-	virtual void readCommand() const override;
+	virtual void readCommand() override;
 public:
 	//--Constructors--//
 	// Parameterized constructor
@@ -134,8 +136,8 @@ public:
 	// Stream insertion operator overload
 	friend std::ostream& operator<<(std::ostream& os, const FileCommandProcessorAdapter& obj);
 
-	// Getter //
-	FileLineReader& getFileLineReader() const;
+	//--Getter--//
+	const FileLineReader& getFileLineReader() const;
 };
 
 #endif

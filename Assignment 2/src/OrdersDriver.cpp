@@ -3,12 +3,12 @@
 void testOrdersList() {
 	OrdersList oList{};
 	
-	oList.getOrders().emplace_back(new Deploy);
-	oList.getOrders().emplace_back(new Advance);
-	oList.getOrders().emplace_back(new Bomb);
-	oList.getOrders().emplace_back(new Blockade);
-	oList.getOrders().emplace_back(new Airlift);
-	oList.getOrders().emplace_back(new Negotiate);
+	oList.addOrder(new Deploy);
+	oList.addOrder(new Advance);
+	oList.addOrder(new Bomb);
+	oList.addOrder(new Blockade);
+	oList.addOrder(new Airlift);
+	oList.addOrder(new Negotiate);
 	std::cout << "---------------------------------------------" << std::endl;
 	std::cout << "\n***Orders***" << std::endl << std::endl;
 	for (Order* o : oList.getOrders()) {

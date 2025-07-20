@@ -49,15 +49,15 @@ std::ostream& operator<<(std::ostream& os, const Card& obj) {
 }
 
 // Getter
-CardType& Card::getCardType() const {
+const CardType& Card::getCardType() const {
 	return *cardType;
 };
 
 // Creates special order and adds it to player's list of orders
 // Removes card from hand and places it back in deck
 Card& Card::play(Hand& hand, Deck& deck) {
-	deck.getCards().push_back(this);
-	hand.getCards().erase(std::find(hand.getCards().begin(), hand.getCards().end(), this));
+	deck.returnToDeck(this);
+	hand.removeCard(this);
 	return *this;
 }
 
@@ -73,7 +73,10 @@ Hand::Hand()
 
 // Copy constructor
 Hand::Hand(const Hand& source) 
-	: cards{new std::vector<Card*>{*source.cards}} {
+	: cards{new std::vector<Card*>{}} {
+	for (const Card* c : *source.cards) {
+		cards->push_back(new Card(*c));
+	}
 	//std::cout << "Called Hand copy constructor" << std::endl;
 }
 
@@ -93,7 +96,10 @@ Hand& Hand::operator=(const Hand& rhs) {
 			delete c;
 		}
 		delete cards;
-		cards = new std::vector<Card*>{*rhs.cards};
+		cards = new std::vector<Card*>{};
+		for (const Card* c : *rhs.cards) {
+			cards->push_back(new Card(*c));
+		}
 	}
 	return *this;
 }
@@ -102,14 +108,23 @@ Hand& Hand::operator=(const Hand& rhs) {
 std::ostream& operator<<(std::ostream& os, const Hand& obj) {
 	os << "Hand's cards:" << std::endl;
 	for (const Card* c : obj.getCards()) {
-		std::cout << *c << std::endl;
+		os << *c << std::endl;
 	}
 	return os;
 }
 
 // Getter
-std::vector<Card*>& Hand::getCards() const {
+const std::vector<Card*>& Hand::getCards() const {
 	return *cards;
+}
+
+// Mutators
+void Hand::addCard(Card* card) {
+	cards->push_back(card);
+}
+
+void Hand::removeCard(Card* card) {
+	cards->erase(std::find(cards->begin(), cards->end(), card));
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -126,14 +141,16 @@ Deck::Deck()
 		cards->emplace_back(new Card{CardType::Airlift});
 		cards->emplace_back(new Card{CardType::Diplomacy});
 	}
-	std::srand(unsigned(std::time(0)));
-	std::random_shuffle(cards->begin(), cards->end());
+	std::shuffle(cards->begin(), cards->end(), std::default_random_engine(std::time(0)));
 	//std::cout << "Called Deck default constructor" << std::endl;
 }
 
 // Copy constructor
 Deck::Deck(const Deck& source) 
-	: cards{new std::vector<Card*>{*source.cards}} {
+	: cards{new std::vector<Card*>{}} {
+	for (const Card* c : *source.cards) {
+		cards->push_back(new Card(*c));
+	}
 	//std::cout << "Called Deck copy constructor" << std::endl;
 }
 
@@ -153,7 +170,10 @@ Deck& Deck::operator=(const Deck& rhs) {
 			delete c;
 		}
 		delete cards;
-		cards = new std::vector<Card*>{*rhs.cards};
+		cards = new std::vector<Card*>{};
+		for (const Card* c : *rhs.cards) {
+			cards->push_back(new Card(*c));
+		}
 	}
 	return *this;
 }
@@ -162,18 +182,24 @@ Deck& Deck::operator=(const Deck& rhs) {
 std::ostream& operator<<(std::ostream& os, const Deck& obj) {
 	os << "Deck's cards:" << std::endl;
 	for (const Card* c : obj.getCards()) {
-		std::cout << *c << std::endl;
+		os << *c << std::endl;
 	}
 	return os;
 }
 
 // Getter
-std::vector<Card*>& Deck::getCards() const {
+const std::vector<Card*>& Deck::getCards() const {
 	return *cards;
 }
 
-// Removes card from deck and adds it to a player's hand
+// Mutators
 void Deck::draw(Hand& Hand) {
-	Hand.getCards().push_back(*cards->begin());
-	cards->erase(cards->begin());
+	if (!cards->empty()) {
+		Hand.addCard(*cards->begin());
+		cards->erase(cards->begin());
+	}
+}
+
+void Deck::returnToDeck(Card* card) {
+	cards->push_back(card);
 }

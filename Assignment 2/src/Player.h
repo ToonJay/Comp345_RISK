@@ -15,7 +15,7 @@ class Map;
 /*
 * Player class
 * Keeps track of player orders, territories and hands
-*/ 
+*/
 class Player {
 private:
 	std::string* playerName;
@@ -43,9 +43,6 @@ public:
 	friend std::ostream& operator<<(std::ostream& os, const Player& obj);
 
 	//--Getters--//
-	std::string& getPlayerName();
-	int& getReinforcementPool();
-	std::unordered_map<std::string, Territory*>& getPlayerTerritories();
 	Hand& getPlayerHand();
 	OrdersList& getPlayerOrdersList();
 	const std::string& getPlayerName() const;
@@ -53,6 +50,13 @@ public:
 	const std::unordered_map<std::string, Territory*>& getPlayerTerritories() const;
 	const Hand& getPlayerHand() const;
 	const OrdersList& getPlayerOrdersList() const;
+
+	//--Mutators--//
+	void setReinforcementPool(int reinforcementPool);
+	void addReinforcements(int numOfUnits);
+	void sendReinforcements(int numOfUnits);
+	void addTerritory(Territory* const territory);
+	void removeTerritory(Territory* const territory);
 
 	// Returns list of pointers of territories to attack
 	std::unordered_set<std::string> toAttack(CommandProcessor& cmdProcessor);
@@ -63,4 +67,3 @@ public:
 };
 
 #endif
-

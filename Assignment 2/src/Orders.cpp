@@ -295,13 +295,13 @@ std::ostream& operator<<(std::ostream& os, const OrdersList& obj) {
 }
 
 // Getter
-std::vector<Order*>& OrdersList::getOrders() const {
+const std::vector<Order*>& OrdersList::getOrders() const {
 	return *orders;
 }
 
 // Add order to player's OrdersList
-void OrdersList::addOrder() {
-	getOrders().emplace_back(new Blockade{});
+void OrdersList::addOrder(Order* order) {
+	orders->emplace_back(order);
 }
 
 // Remove order pointer and delete the pointed to object
@@ -319,7 +319,6 @@ void OrdersList::move(int source, int destination) {
 			Order* o{orders->at(source)};
 			orders->erase(orders->begin() + source);
 			orders->insert(orders->begin() + destination, o);
-			
 		}
 	}
 }

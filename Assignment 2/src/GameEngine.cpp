@@ -114,13 +114,13 @@ void GameEngine::transition(const Command& command) {
 // This is where the game setup happens and it can be done either via console or file.
 void GameEngine::startupPhase() {
 	GameState& gs{getGameState()};
-	std::list<Command>& commandList{cmdProcessor->getCommandList()};
+	const std::list<Command>& commandList{cmdProcessor->getCommandList()};
 	std::string cmdString{};
 	bool isValid{false};
 
 	while (!isValid) {
 		std::cout << "Please choose to get commands from console or file <filename>: ";
-		Command& cmd = cmdProcessor->getCommand();
+		const Command& cmd = cmdProcessor->getCommand();
 		std::istringstream iss{cmd.getCommand()};
 		iss >> cmdString;
 		if (cmdString == "file") {
@@ -189,24 +189,22 @@ void GameEngine::startupPhase() {
 						territoryDistribution.emplace_back(i % playersList->size());
 					}
 
-					std::srand(unsigned(std::time(0)));
-					std::random_shuffle(playersList->begin(), playersList->end());
-					std::srand(unsigned(std::time(0)));
-					std::random_shuffle(territoryDistribution.begin(), territoryDistribution.end());
+
+					std::shuffle(playersList->begin(), playersList->end(), std::default_random_engine(std::time(0)));
+					std::shuffle(territoryDistribution.begin(), territoryDistribution.end(), std::default_random_engine(std::time(0)));
 
 					int count{0};
-					for (auto& territory : mapLoader->getMap().getGameMap()) {
+					for (const auto& territory : mapLoader->getMap().getGameMap()) {
 						if (count < numOfPlayerTerritories) {
-							playersList->at(territoryDistribution.at(count)).getPlayerTerritories().insert(std::make_pair(territory.first->getName(), territory.first));
-							territory.first->getOwner() = playersList->at(territoryDistribution.at(count)).getPlayerName();
+							playersList->at(territoryDistribution.at(count)).addTerritory(territory.first);
+							territory.first->setOwner(playersList->at(territoryDistribution.at(count)).getPlayerName());
 							count++;
 						} else {
 							break;
 						}
 					}
-
 					for (Player& p : *playersList) {
-						p.getReinforcementPool() = 50;
+						p.setReinforcementPool(50);
 						deck->draw(p.getPlayerHand());
 						deck->draw(p.getPlayerHand());
 						std::cout << p << std::endl;
@@ -241,9 +239,9 @@ void GameEngine::reinforcementPhase() {
 	for (Player& p : *playersList) {
 		reinforcements = p.getPlayerTerritories().size() / 3;
 		if (reinforcements <= 3) {
-			p.getReinforcementPool() += 3;
+			p.addReinforcements(3);
 		} else {
-			p.getReinforcementPool() += reinforcements;
+			p.addReinforcements(reinforcements);
 		}
 	}
 
@@ -263,7 +261,7 @@ void GameEngine::reinforcementPhase() {
 				std::cout << owner << " receives additional reinforcements of " << mapLoader->getMap().getContinentBonuses().at(continent.first) << std::endl;
 				for (Player& player : *playersList) {
 					if (owner == player.getPlayerName()) {
-						player.getReinforcementPool() += mapLoader->getMap().getContinentBonuses().at(continent.first);
+						player.addReinforcements(mapLoader->getMap().getContinentBonuses().at(continent.first));
 					}
 				}
 			}

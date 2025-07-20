@@ -3,7 +3,7 @@
 #include <iostream>
 #include <vector>
 #include <string>
-#include <algorithm>
+#include <random>
 
 enum class CardType {Bomb, Reinforcement, Blockade, Airlift, Diplomacy};
 
@@ -32,8 +32,8 @@ public:
 	// Stream insertion operator overload
 	friend std::ostream& operator<<(std::ostream& os, const Card& obj);
 
-	// Getter //
-	CardType& getCardType() const;
+	//--Getter--//
+	const CardType& getCardType() const;
 
 	// Creates special order and adds it to player's list of orders
 	Card& play(Hand& Hand , Deck& deck);
@@ -61,8 +61,12 @@ public:
 	// Stream insertion operator overload
 	friend std::ostream& operator<<(std::ostream& os, const Hand& obj);
 
-	// Getter //
-	std::vector<Card*>& getCards() const;
+	//--Getter--//
+	const std::vector<Card*>& getCards() const;
+
+	//--Mutators--//
+	void addCard(Card* card);
+	void removeCard(Card* card);
 };
 
 /*
@@ -88,11 +92,12 @@ public:
 	// Stream insertion operator overload
 	friend std::ostream& operator<<(std::ostream& os, const Deck& obj);
 
-	// Getter //
-	std::vector<Card*>& getCards() const;
+	//--Getter--//
+	const std::vector<Card*>& getCards() const;
 
-	// Removes card from deck and adds it to a player's hand
+	//--Mutators--//
 	void draw(Hand& hand);
+	void returnToDeck(Card* card);
 };
 
 #endif
