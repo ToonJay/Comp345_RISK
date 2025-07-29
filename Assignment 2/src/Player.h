@@ -11,6 +11,7 @@ class Hand;
 class OrdersList;
 class CommandProcessor;
 class Map;
+class Deck;
 
 /*
 * Player class
@@ -23,6 +24,7 @@ private:
 	std::unordered_map<std::string, Territory*>* playerTerritories;
 	Hand* playerHand;
 	OrdersList* playerOrdersList;
+	bool* drawCard;
 public:
 	//--Constructors--//
 	// Default constructor
@@ -45,11 +47,13 @@ public:
 	//--Getters--//
 	Hand& getPlayerHand();
 	OrdersList& getPlayerOrdersList();
+	bool& getDrawCard();
 	const std::string& getPlayerName() const;
 	const int& getReinforcementPool() const;
 	const std::unordered_map<std::string, Territory*>& getPlayerTerritories() const;
 	const Hand& getPlayerHand() const;
 	const OrdersList& getPlayerOrdersList() const;
+	const bool& getDrawCard() const;
 
 	//--Mutators--//
 	void setReinforcementPool(int reinforcementPool);
@@ -63,7 +67,7 @@ public:
 	// Returns list of pointers of territories to defend
 	std::unordered_set<std::string> toDefend(CommandProcessor& cmdProcessor);
 	// Adds order to player's list of orders
-	void issueOrder(CommandProcessor& cmdProcessor);
+	void issueOrder(CommandProcessor& cmdProcessor, Deck& deck);
 };
 
 #endif

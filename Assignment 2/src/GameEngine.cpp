@@ -1,26 +1,33 @@
 #include "GameEngine.h"
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// GameEngine class function definitions 
+// GameEngine class function definitions
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // Default constructor
 GameEngine::GameEngine()
-	: gameState{new GameState{GameState::Start}}, cmdProcessor{new CommandProcessor}, deck{new Deck}, playersList{new std::vector<Player>} {
-	// std::cout << "Called GameEngine default constructor" << std::endl;
+	: gameState{new GameState{GameState::Start}}, cmdProcessor{new CommandProcessor}, deck{new Deck}, playersList{new std::vector<Player>},
+	playerLookup{new std::unordered_map<std::string, Player*>},	diplomacyMap{new std::unordered_map<std::string, std::string>} {
+	// //std::cout << "Called GameEngine default constructor" << std::endl;
 }
 
 // Copy constructor
 GameEngine::GameEngine(const GameEngine& source)
 	: gameState{new GameState{*source.gameState}}, cmdProcessor{new CommandProcessor{*source.cmdProcessor}},
-	mapLoader{new MapLoader{*source.mapLoader}}, deck{new Deck{*source.deck}}, playersList{new std::vector<Player>{*source.playersList}} {
-	// std::cout << "Called GameEngine destructor" << std::endl;
+	mapLoader{new MapLoader{*source.mapLoader}}, deck{new Deck{*source.deck}}, playersList{new std::vector<Player>{*source.playersList}},
+	playerLookup{new std::unordered_map<std::string, Player*>{*source.playerLookup}}, diplomacyMap{new std::unordered_map<std::string, std::string>{*source.diplomacyMap}} {
+	// //std::cout << "Called GameEngine destructor" << std::endl;
 }
 
 // Destructor
 GameEngine::~GameEngine() {
 	delete gameState;
 	delete cmdProcessor;
+	delete mapLoader;
+	delete deck;
+	delete playersList;
+	delete playerLookup;
+	delete diplomacyMap;
 }
 
 // Assignment operator overload
@@ -28,8 +35,18 @@ GameEngine& GameEngine::operator=(const GameEngine& rhs) {
 	if (this != &rhs) {
 		delete gameState;
 		delete cmdProcessor;
+		delete mapLoader;
+		delete deck;
+		delete playersList;
+		delete playerLookup;
+		delete diplomacyMap;
 		gameState = new GameState{*rhs.gameState};
 		cmdProcessor = new CommandProcessor{*rhs.cmdProcessor};
+		mapLoader = new MapLoader{*rhs.mapLoader};
+		deck = new Deck{*rhs.deck};
+		playersList = new std::vector<Player>{*rhs.playersList};
+		playerLookup = new std::unordered_map<std::string, Player*>{*rhs.playerLookup};
+		diplomacyMap = new std::unordered_map<std::string, std::string>{*rhs.diplomacyMap};
 	}
 	return *this;
 }
@@ -58,6 +75,22 @@ CommandProcessor& GameEngine::getCommandProcessor() {
 	return *cmdProcessor;
 }
 
+MapLoader& GameEngine::getMapLoader() {
+	return *mapLoader;
+}
+
+Deck& GameEngine::getDeck() {
+	return *deck;
+}
+
+Player& GameEngine::getPlayerByName(const std::string& name) {
+	return *playerLookup->at(name);
+}
+
+std::unordered_map<std::string, std::string>& GameEngine::getDiplomacyMap() {
+	return *diplomacyMap;
+}
+
 const GameState& GameEngine::getGameState() const {
 	return *gameState;
 }
@@ -66,11 +99,35 @@ const CommandProcessor& GameEngine::getCommandProcessor() const {
 	return *cmdProcessor;
 }
 
+const MapLoader& GameEngine::getMapLoader() const {
+	return *mapLoader;
+}
+
+const Deck& GameEngine::getDeck() const {
+	return *deck;
+}
+
+const std::unordered_map<std::string, Player*>& GameEngine::getPlayerLookup() const {
+	return *playerLookup;
+}
+
+const Player& GameEngine::getPlayerByName(const std::string& name) const {
+	return *playerLookup->at(name);
+}
+
+const std::unordered_map<std::string, std::string>& GameEngine::getDiplomacyMap() const {
+	return *diplomacyMap;
+}
+
+
+
 // Transitions from one gameState to the next
 void GameEngine::transition(const Command& command) {
 	switch (*gameState) {
 	case GameState::Start:
-		*gameState = GameState::Map_Loaded;
+		if (command.getCommand().substr(0, 7) == "loadmap") {
+			*gameState = GameState::Map_Loaded;
+		}
 		break;
 	case GameState::Map_Loaded:
 		if (command.getCommand() == "validatemap") {
@@ -78,15 +135,19 @@ void GameEngine::transition(const Command& command) {
 		}
 		break;
 	case GameState::Map_Validated:
-		*gameState = GameState::Players_Added;
-		break;
+		if (command.getCommand().substr(0, 9) == "addplayer") {
+			*gameState = GameState::Players_Added;
+			break;
+		}
 	case GameState::Players_Added:
 		if (command.getCommand() == "gamestart") {
 			*gameState = GameState::Assign_Reinforcement;
 		}
 		break;
 	case GameState::Assign_Reinforcement:
-		*gameState = GameState::Issue_Orders;
+		if (command.getCommand() == "issueorder") {
+			*gameState = GameState::Issue_Orders;
+		}
 		break;
 	case GameState::Issue_Orders:
 		if (command.getCommand() == "endissueorders") {
@@ -182,13 +243,12 @@ void GameEngine::startupPhase() {
 				}
 			} else if (cmdString == "gamestart") {
 				if (playersList->size() > 1) {
-					size_t numOfPlayerTerritories{mapLoader->getMap().getGameMap().size() / 2 - mapLoader->getMap().getGameMap().size() / 2 % playersList->size()};
+					size_t numOfPlayerTerritories{mapLoader->getMap().getGameMap().size() / 10 - mapLoader->getMap().getGameMap().size() / 2 % playersList->size()};
 					std::cout << numOfPlayerTerritories << std::endl;
 					std::vector<int> territoryDistribution;
 					for (size_t i = 0; i < numOfPlayerTerritories; i++) {
 						territoryDistribution.emplace_back(i % playersList->size());
 					}
-
 
 					std::shuffle(playersList->begin(), playersList->end(), std::default_random_engine(std::time(0)));
 					std::shuffle(territoryDistribution.begin(), territoryDistribution.end(), std::default_random_engine(std::time(0)));
@@ -204,6 +264,7 @@ void GameEngine::startupPhase() {
 						}
 					}
 					for (Player& p : *playersList) {
+						playerLookup->emplace(p.getPlayerName(), &p);
 						p.setReinforcementPool(50);
 						deck->draw(p.getPlayerHand());
 						deck->draw(p.getPlayerHand());
@@ -218,21 +279,24 @@ void GameEngine::startupPhase() {
 		}
 	}
 	cmdProcessor = new CommandProcessor;
-	mainGameLoop();
 }
 
 // The main game loop.
 // The game loops through these three phases until it's done.
 void GameEngine::mainGameLoop() {
-	reinforcementPhase();
-	issueOrdersPhase();
-	executeOrdersPhase();
+	GameState& gs{getGameState()};
+	while (gs != GameState::Win) {
+		reinforcementPhase();
+		issueOrdersPhase();
+		executeOrdersPhase();
+	}
 }
 
 // This is where players get their reinforcements.
 // The reinforcements they'll get is the number of territories divided by 3, with a minimum of 3.
 // They also get extra reinforcements if they own a complete continent depending on the continent's bonus value.
 void GameEngine::reinforcementPhase() {
+	GameState& gs{getGameState()};
 	std::cout << "Reinforcement Phase\n" << std::endl;
 
 	int reinforcements;
@@ -271,10 +335,16 @@ void GameEngine::reinforcementPhase() {
 	for (const Player& p : *playersList) {
 		std::cout << p << std::endl;
 	}
+	
+	Command& cmd{cmdProcessor->getCommand("issueorder")};
+	if (cmdProcessor->validate(cmd, gs)) {
+		transition(cmd);
+	}
 }
 
 // This is where players issue all their orders in round-robin fashion until each player has no more orders to give
 void GameEngine::issueOrdersPhase() {
+	GameState& gs{getGameState()};
 	std::cout << "Issue Orders Phase\n" << std::endl;
 	std::vector<bool> finishedOrders(playersList->size(), false);
 	int endCount{0};
@@ -282,8 +352,8 @@ void GameEngine::issueOrdersPhase() {
 	while (endCount < playersList->size()) {
 		for (size_t i = 0; i < playersList->size(); i++) {
 			if (finishedOrders.at(i) == false) {
-				playersList->at(i).issueOrder(*cmdProcessor);
-				if (cmdProcessor->getCommandList().back().getCommand() == "endissueorders") {
+				playersList->at(i).issueOrder(*cmdProcessor, *deck);
+				if (cmdProcessor->getCommandList().back().getCommand() == "done") {
 					finishedOrders.at(i) = true;
 					endCount++;
 				}
@@ -291,27 +361,75 @@ void GameEngine::issueOrdersPhase() {
 		}
 	}
 	std::cout << std::endl;
+	
+	Command& cmd{cmdProcessor->getCommand("endissueorders")};
+	if (cmdProcessor->validate(cmd, gs)) {
+		transition(cmd);
+	}
 }
 
 // This is where the players' orders get validated and executed in round-robin fashion
 // However, it will first go through all deploy orders from all players first
 void GameEngine::executeOrdersPhase() {
+	GameState& gs{getGameState()};
 	std::cout << "Execute Orders Phase\n" << std::endl;
+
+	for (auto& p : *playersList) {
+		for (size_t j = 0; j < p.getPlayerOrdersList().getOrders().size(); j++) {
+			Order* o = p.getPlayerOrdersList().getOrders().at(j);
+			if (typeid(*o) == typeid(Deploy)) {
+				o->execute(*this, p);
+				std::cout << p.getPlayerName() << std::endl;
+				std::cout << *o << std::endl;
+				p.getPlayerOrdersList().remove(j);
+				j--;
+			}
+		}
+	}
+
 	std::vector<bool> finishedOrders(playersList->size(), false);
 	int endCount{0};
 	while (endCount < playersList->size()) {
 		for (size_t i = 0; i < playersList->size(); i++) {
+			Player& p{playersList->at(i)};
 			if (finishedOrders.at(i) == false) {
-				Player& p{playersList->at(i)};
-				std::cout << p.getPlayerName() << " Order:" << std::endl;
-				std::cout << **p.getPlayerOrdersList().getOrders().begin() << std::endl;
-				p.getPlayerOrdersList().remove(0);
 				if (p.getPlayerOrdersList().getOrders().size() == 0) {
 					finishedOrders.at(i) = true;
 					endCount++;
+				} else {
+					Order* o = p.getPlayerOrdersList().getOrders().at(0);
+					o->execute(*this, p);
+					std::cout << p.getPlayerName() << std::endl;
+					std::cout << *o << std::endl;
+					p.getPlayerOrdersList().remove(0);
 				}
 			}
 		}
 	}
-	exit;
+	for (size_t i = 0; i < playersList->size(); i++) {
+		Player& p{playersList->at(i)};
+		if (p.getDrawCard()) {
+			deck->draw(p.getPlayerHand());
+			p.getDrawCard() = false;
+		}
+		if (p.getPlayerTerritories().empty()) {
+			std::cout << p.getPlayerName() << " has been eliminated!" << std::endl;
+			playersList->erase(playersList->begin() + i);
+			i--;
+		}
+	}
+	
+	if (playersList->size() == 1) {
+		std::cout << playersList->at(0).getPlayerName() << " is the last remaining player." << std::endl; 
+		std::cout << playersList->at(0).getPlayerName() << " is the WINNER!!!!!" << std::endl;
+		Command& cmd{cmdProcessor->getCommand("win")};
+		if (cmdProcessor->validate(cmd, gs)) {
+			transition(cmd);
+		}
+	} else {
+		Command& cmd{cmdProcessor->getCommand("endexecorders")};
+		if (cmdProcessor->validate(cmd, gs)) {
+			transition(cmd);
+		}
+	}	
 }

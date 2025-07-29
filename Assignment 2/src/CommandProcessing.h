@@ -70,6 +70,8 @@ public:
 
 	// Creates, stores and returns Command object
 	Command& getCommand();
+	// Creates, stores and returns Command object using a string parameter instead of the console
+	Command& getCommand(const std::string& command);
 
 	// Validates whether or not a command is valid during the current game state
 	bool validate(Command& command, GameState& gameState) const;

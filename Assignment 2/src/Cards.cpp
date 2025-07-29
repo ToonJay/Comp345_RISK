@@ -33,7 +33,7 @@ Card& Card::operator=(const Card& rhs) {
 
 // Equality operator overload
 bool Card::operator==(const Card& rhs) const {
-	return this->cardType == rhs.cardType;
+	return this == &rhs;
 }
 
 // Stream insertion operator overload

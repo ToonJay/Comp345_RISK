@@ -120,6 +120,12 @@ Command& CommandProcessor::getCommand() {
 	return commandList->back();
 }
 
+// Creates, stores and returns Command object using a string parameter instead of the console
+Command& CommandProcessor::getCommand(const std::string& command) {
+	saveCommand(command);
+	return commandList->back();
+}
+
 // Validates whether or not a command is valid during the current game state
 bool CommandProcessor::validate(Command& command, GameState& gameState) const {
 	switch (gameState) {
@@ -223,7 +229,7 @@ FileLineReader::~FileLineReader() {
 	file->close();
 	delete file;
 	delete line;
-	// std::cout << "Called FileLineReader destructor" << std::endl;
+	// //std::cout << "Called FileLineReader destructor" << std::endl;
 }
 
 // Copy assignment operator overload
@@ -285,19 +291,19 @@ void FileCommandProcessorAdapter::readCommand() {
 // Parameterized constructor
 FileCommandProcessorAdapter::FileCommandProcessorAdapter(std::string file) 
 	: flr{new FileLineReader{file}} {
-	// std::cout << "Called FileCommandProcessorAdapter parameterized constructor" << std::endl;
+	// //std::cout << "Called FileCommandProcessorAdapter parameterized constructor" << std::endl;
 }
 
 // Copy constructor
 FileCommandProcessorAdapter::FileCommandProcessorAdapter(const FileCommandProcessorAdapter& source) 
 	: flr{new FileLineReader{*source.flr}} {
-	// std::cout << "Called FileCommandProcessorAdapter copy constructor" << std::endl;
+	// //std::cout << "Called FileCommandProcessorAdapter copy constructor" << std::endl;
 }
 
 // Destructor, deletes pointer data member
 FileCommandProcessorAdapter::~FileCommandProcessorAdapter() {
 	delete flr;
-	// std::cout << "Called FileCommandProcessorAdapter destructor" << std::endl;
+	// //std::cout << "Called FileCommandProcessorAdapter destructor" << std::endl;
 }
 
 // Copy assignment operator overload

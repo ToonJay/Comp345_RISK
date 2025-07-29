@@ -3,6 +3,9 @@
 #include <iostream>
 #include <string>
 #include <random>
+#include <typeinfo>
+#include <unordered_map>
+#include <unordered_set>
 #include "Player.h"
 #include "Map.h"
 #include "Cards.h"
@@ -22,6 +25,8 @@ private:
 	MapLoader* mapLoader;
 	Deck* deck;
 	std::vector<Player>* playersList;
+	std::unordered_map<std::string, Player*>* playerLookup;
+	std::unordered_map<std::string, std::string>* diplomacyMap;
 public:
 	//--Constructors--//
 	// Default constructor
@@ -40,9 +45,20 @@ public:
 	//--Getters--//
 	GameState& getGameState();
 	CommandProcessor& getCommandProcessor();
+	MapLoader& getMapLoader();
+	Deck& getDeck();
+	Player& getPlayerByName(const std::string& name);
+	std::unordered_map<std::string, std::string>& getDiplomacyMap();
+	
+
 	const GameState& getGameState() const;
 	const CommandProcessor& getCommandProcessor() const;
-
+	const MapLoader& getMapLoader() const;
+	const Deck& getDeck() const;
+	const std::unordered_map<std::string, Player*>& getPlayerLookup() const;
+	const Player& getPlayerByName(const std::string& name) const;
+	const std::unordered_map<std::string, std::string>& getDiplomacyMap() const;
+	
 	// Transitions from one gameState to the next
 	void transition(const Command& command);
 

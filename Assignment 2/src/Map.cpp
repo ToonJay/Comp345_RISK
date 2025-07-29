@@ -6,40 +6,43 @@
 
 // Default constructor, allocates memory and initializes to defaults
 Territory::Territory()
-	: name{new std::string}, numOfArmies{new int{0}}, owner{new std::string{"Neutral"}} {
-	// std::cout << "Called Territory default constructor" << std::endl;
+	: name{new std::string}, numOfUnits{new int{0}}, owner{new std::string{"Neutral"}}, continent{new std::string} {
+	// //std::cout << "Called Territory default constructor" << std::endl;
 }
 
 // Parameterized constructor, only the name can be set
 // The rest is to be set after construction
-Territory::Territory(std::string name)
-	: name{new std::string{name}}, numOfArmies{new int{0}}, owner{new std::string{"Neutral"}} {
-	// std::cout << "Called Territory parameterized constructor" << std::endl;
+Territory::Territory(std::string name, std::string continent)
+	: name{new std::string{name}}, numOfUnits{new int{0}}, owner{new std::string{"Neutral"}}, continent{new std::string{continent}} {
+	// //std::cout << "Called Territory parameterized constructor" << std::endl;
 }
 
 // Copy constructor
 Territory::Territory(const Territory& source)
-	: name{new std::string{*source.name}}, numOfArmies{new int{*source.numOfArmies}}, owner{new std::string{*source.owner}} {
-	// std::cout << "Called Territory copy constructor" << std::endl;
+	: name{new std::string{*source.name}}, numOfUnits{new int{*source.numOfUnits}}, owner{new std::string{*source.owner}}, continent{new std::string{*source.continent}} {
+	// //std::cout << "Called Territory copy constructor" << std::endl;
 }
 
 // Destructor, deallocates memory for all the pointer data members
 Territory::~Territory() {
 	delete name;
-	delete numOfArmies;
+	delete numOfUnits;
 	delete owner;
-	// std::cout << "Called Territory destructor" << std::endl;
+	delete continent;
+	// //std::cout << "Called Territory destructor" << std::endl;
 }
 
 // Copy assignment operator overload
 Territory& Territory::operator=(const Territory& rhs) {
 	if (this != &rhs) {
 		delete name;
-		delete numOfArmies;
+		delete numOfUnits;
 		delete owner;
+		delete continent;
 		name = new std::string{*rhs.name};
-		numOfArmies = new int{*rhs.numOfArmies};
+		numOfUnits = new int{*rhs.numOfUnits};
 		owner = new std::string{*rhs.owner};
+		continent = new std::string{*rhs.continent};
 	}
 	return *this;
 }
@@ -60,12 +63,16 @@ const std::string& Territory::getName() const {
 	return *name;
 }
 
-const int& Territory::getNumOfArmies() const {
-	return *numOfArmies;
+const int& Territory::getNumOfUnits() const {
+	return *numOfUnits;
 }
 
 const std::string& Territory::getOwner() const {
 	return *owner;
+}
+
+const std::string& Territory::getContinent() const {
+	return *continent;
 }
 
 // Mutators
@@ -73,18 +80,20 @@ void Territory::setOwner(const std::string& owner) {
 	*this->owner = owner;
 }
 
-void Territory::setNumOfArmies(int numOfArmies) {
-	*this->numOfArmies = (numOfArmies >= 0) ? numOfArmies : 0;
+void Territory::setNumOfUnits(int numOfUnits) {
+	*this->numOfUnits = (numOfUnits >= 0) ? numOfUnits : 0;
 }
 
-void Territory::addArmies(int amount) {
-	*this->numOfArmies += amount;
+void Territory::addUnits(int amount) {
+	if (amount > 0) {
+		*this->numOfUnits += amount;
+	}
 }
 
-void Territory::removeArmies(int amount) {
-	*this->numOfArmies -= amount;
-	if (*this->numOfArmies < 0) {
-		*this->numOfArmies = 0;
+void Territory::removeUnits(int amount) {
+	*this->numOfUnits -= amount;
+	if (*this->numOfUnits < 0) {
+		*this->numOfUnits = 0;
 	}
 }
 
@@ -97,8 +106,8 @@ Map::Map() : territories{new std::unordered_map<std::string, Territory>},
 	gameMap{new std::unordered_map<Territory*, std::unordered_set<Territory*>>},
 	continents{new std::unordered_map<std::string, std::unordered_set<Territory*>>},
 	continentBonuses{new std::unordered_map<std::string, int>},
-	isUndirected{new bool}, isValid{new bool} {
-	// std::cout << "Called Map default constructor" << std::endl;
+	isUndirected{new bool{true}}, isValid{new bool{true}} {
+	// //std::cout << "Called Map default constructor" << std::endl;
 }
 
 // Parameterized constructor
@@ -113,7 +122,7 @@ Map::Map(
 	continents{new std::unordered_map<std::string, std::unordered_set<Territory*>>{continents}},
 	continentBonuses{new std::unordered_map<std::string, int>{continentBonuses}},
 	isUndirected{new bool{true}}, isValid{new bool{true}} {
-	// std::cout << "Called Map parameterized constructor" << std::endl;
+	// //std::cout << "Called Map parameterized constructor" << std::endl;
 }
 
 // Copy constructor that uses a delegate constructor
@@ -123,7 +132,7 @@ Map::Map(const Map& source)
 	continents{new std::unordered_map<std::string, std::unordered_set<Territory*>>{*source.continents}},
 	continentBonuses{new std::unordered_map<std::string, int>{*source.continentBonuses}},
 	isUndirected{new bool{*source.isUndirected}}, isValid{new bool{*source.isValid}} {
-	// std::cout << "Called Map copy constructor" << std::endl;
+	// //std::cout << "Called Map copy constructor" << std::endl;
 }
 
 // Destructor, deallocate memory for all the pointer data members
@@ -134,7 +143,7 @@ Map::~Map() {
 	delete continentBonuses;
 	delete isUndirected;
 	delete isValid;
-	// std::cout << "Called Map destructor" << std::endl;
+	// //std::cout << "Called Map destructor" << std::endl;
 }
 
 // Copy assignment operator overload
@@ -202,15 +211,17 @@ const std::unordered_map<std::string, int>& Map::getContinentBonuses() const {
 	return *continentBonuses;
 }
 
+const Territory& Map::getTerritoryByName(const std::string& name) const {
+	return territories->at(name);
+}
+
 // Mutators
-void Map::addTerritory(const std::string& name) {
+void Map::addTerritory(const std::string& name, const std::string& continent) {
 	if (territories->find(name) != territories->end()) {
 		return;
 	}
 
-	Territory t{name};
-	territories->emplace(name, Territory(t));
-
+	territories->emplace(name, Territory{name, continent});
 	(*gameMap)[&territories->at(name)] = {};
 }
 
@@ -360,7 +371,17 @@ MapLoader::MapLoader(std::string filepath)
 				std::string territory;
 				std::getline(iss, territory, ',');
 
-				map->addTerritory(territory);
+				std::string continent;
+				for (size_t i = 0; i < 3; i++) {
+					std::getline(iss, continent, ',');
+				}
+				if (continents.find(continent) == continents.end()) {
+					in_file.close();
+					throw std::string{"Invalid map file - Non-existant continent"};
+				}
+
+				map->addTerritory(territory, continent);
+				map->assignToContinent(continent, &map->getTerritoryByName(territory));
 			}
 			in_file.clear();
 			in_file.seekg(pos);
@@ -374,23 +395,17 @@ MapLoader::MapLoader(std::string filepath)
 				std::string territory;
 				std::getline(iss, territory, ',');
 
+				// read and discard continent field here because it's handled in the previous loop
 				std::string continent;
 				for (size_t i = 0; i < 3; i++) {
 					std::getline(iss, continent, ',');
 				}
-				if (continents.find(continent) == continents.end()) {
-					in_file.close();
-					throw std::string{"Invalid map file - Non-existant continent"};
-				}
-
+				
 				std::string neighbor;
 				while (std::getline(iss, neighbor, ',')) {
 					map->addNeighbor(&map->getTerritoryByName(territory), &map->getTerritoryByName(neighbor));
 				}
-
-				map->assignToContinent(continent, &map->getTerritoryByName(territory));
 			}
-			
 		}
 		catch (std::string& ex) {
 			std::cout << ex << std::endl;
@@ -411,22 +426,22 @@ MapLoader::MapLoader(std::string filepath)
 	}
 	// If not valid, delete the data
 	if (!isValid) {
-		map->~Map();
+		delete map;
 		map = new Map();
 	}
-	// std::cout << "Called Maploader parameterized constructor" << std::endl;
+	// //std::cout << "Called Maploader parameterized constructor" << std::endl;
 }
 
 // Copy constructor, uses parameterized constructor as delegate
 MapLoader::MapLoader(const MapLoader& source) 
 	: map{new Map(*source.map)} {
-	// std::cout << "Called Maploader copy constructor" << std::endl;
+	// //std::cout << "Called Maploader copy constructor" << std::endl;
 }
 
 // Destructor, deallocate memory for all the pointer data members
 MapLoader::~MapLoader() {
 	delete map;
-	// std::cout << "Called Maploader destructor" << std::endl;
+	// //std::cout << "Called Maploader destructor" << std::endl;
 }
 
 // Copy assignment operator
@@ -443,8 +458,6 @@ std::ostream& operator<<(std::ostream& os, const MapLoader& obj) {
 	os << obj.getMap();
 	return os;
 }
-
-
 
 // Getter
 Map& MapLoader::getMap() {

@@ -4,9 +4,13 @@
 
 void testCommandProcessor();
 void testStartupPhase();
+void testMainGameLoop();
+void testOrderExecution();
 
 int main() {
 	//testCommandProcessor();
-	testStartupPhase();
+	//testStartupPhase();
+	//testMainGameLoop();
+	testOrderExecution();
 	return 0;
 }

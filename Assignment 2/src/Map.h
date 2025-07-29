@@ -15,14 +15,15 @@
 class Territory {
 private:
 	std::string* name;
-	int* numOfArmies;
+	int* numOfUnits;
 	std::string* owner;
+	std::string* continent;
 public:
 	//--Constructors--//
 	// Default constructor
 	Territory();
 	// Parameterized constructor
-	Territory(std::string name);
+	Territory(std::string name, std::string continent);
 	// Copy constructor
 	Territory(const Territory& source);
 	// Destructor
@@ -38,14 +39,15 @@ public:
 
 	//--Getters--//
 	const std::string& getName() const;
-	const int& getNumOfArmies() const;
+	const int& getNumOfUnits() const;
 	const std::string& getOwner() const;
+	const std::string& getContinent() const;
 
 	//--Mutators--//
 	void setOwner(const std::string& newOwner);
-	void setNumOfArmies(int numOfArmies);
-	void addArmies(int amount);
-	void removeArmies(int amount);
+	void setNumOfUnits(int numOfUnits);
+	void addUnits(int amount);
+	void removeUnits(int amount);
 };
 
 /*
@@ -90,9 +92,10 @@ public:
 	const std::unordered_map<Territory*, std::unordered_set<Territory*>>& getGameMap() const;
 	const std::unordered_map<std::string, std::unordered_set<Territory*>>& getContinents() const;
 	const std::unordered_map<std::string, int>& getContinentBonuses() const;
+	const Territory& getTerritoryByName(const std::string& name) const;
 
 	//--Mutators--//
-	void addTerritory(const std::string& name);
+	void addTerritory(const std::string& name, const std::string& continent);
 	void addContinent(const std::string& continent, int bonus);
 	void addNeighbor(Territory* const territory, Territory* const neighbor);
 	void assignToContinent(const std::string& continent, Territory* const t);
