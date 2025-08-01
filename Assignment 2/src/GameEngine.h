@@ -11,6 +11,7 @@
 #include "Cards.h"
 #include "Orders.h"
 #include "CommandProcessing.h"
+#include "LoggingObserver.h"
 
 enum class GameState {Start, Map_Loaded, Map_Validated, Players_Added, Assign_Reinforcement, Issue_Orders, Execute_Orders, Win, Exit_Program};
 
@@ -18,7 +19,7 @@ enum class GameState {Start, Map_Loaded, Map_Validated, Players_Added, Assign_Re
 * GameEngine class
 * Controls the state of the game with states, transitions and commands.
 */
-class GameEngine {
+class GameEngine : public Subject, public ILoggable {
 private:
 	GameState* gameState;
 	CommandProcessor* cmdProcessor;
@@ -27,6 +28,7 @@ private:
 	std::vector<Player>* playersList;
 	std::unordered_map<std::string, Player*>* playerLookup;
 	std::unordered_map<std::string, std::string>* diplomacyMap;
+	LogObserver* logObserver;
 public:
 	//--Constructors--//
 	// Default constructor
@@ -49,8 +51,7 @@ public:
 	Deck& getDeck();
 	Player& getPlayerByName(const std::string& name);
 	std::unordered_map<std::string, std::string>& getDiplomacyMap();
-	
-
+	LogObserver& getLogObserver();
 	const GameState& getGameState() const;
 	const CommandProcessor& getCommandProcessor() const;
 	const MapLoader& getMapLoader() const;
@@ -58,9 +59,14 @@ public:
 	const std::unordered_map<std::string, Player*>& getPlayerLookup() const;
 	const Player& getPlayerByName(const std::string& name) const;
 	const std::unordered_map<std::string, std::string>& getDiplomacyMap() const;
+	const LogObserver& getLogObserver() const;
 	
 	// Transitions from one gameState to the next
 	void transition(const Command& command);
+	// Converts current GameState to string
+	std::string gameStateToString() const;
+	// Logs current game state
+	virtual std::string stringToLog() const override;
 
 	//--Game phases--//
 	// Where the game is setup
@@ -70,6 +76,8 @@ public:
 	void reinforcementPhase();
 	void issueOrdersPhase();
 	void executeOrdersPhase();
+
+	
 };
 
 #endif

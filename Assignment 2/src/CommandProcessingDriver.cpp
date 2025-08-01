@@ -26,7 +26,7 @@ void testCommandProcessor() {
 		std::string fileName;
 		iss >> fileName;
 		GameEngine ge;
-		FileCommandProcessorAdapter adapter{fileName};
+		FileCommandProcessorAdapter adapter{fileName, &ge.getLogObserver()};
 		if (adapter.getFileLineReader().getFile()) {
 			while (ge.getGameState() != GameState::Exit_Program) {
 				std::cout << "Current Game State: " << ge << std::endl;

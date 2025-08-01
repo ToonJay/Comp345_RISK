@@ -2,6 +2,11 @@
 #define _ORDERS_H_
 #include <vector>
 #include <iostream>
+#include "LoggingObserver.h"
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// IMPORTANT NOTE : I'm skipping the << and = overloads for Order's Subclasses since they're completely unneeded.
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 class GameEngine;
 class Player;
@@ -11,7 +16,7 @@ class Player;
 * Will be the base class for all types of orders
 * Making this an abstract class since I'll only use the subclasses
 */
-class Order {
+class Order : public Subject, public ILoggable {
 private:
 	std::string* orderDescription;
 protected:
@@ -34,10 +39,16 @@ public:
 	// Stream insertion operator overload
 	friend std::ostream& operator<<(std::ostream& os, const Order& obj);
 
+	//--Getters--//
+	const std::string& getOrderDescription() const;
+
 	// Verifies whether or not the order can be executed
 	virtual bool validate(GameEngine& game, Player& player) const = 0;
 	// Execute a valid order
 	virtual void execute(GameEngine& game, Player& player) = 0;
+
+	// Logs order's effect
+	virtual std::string stringToLog() const override;
 };
 
 /*
@@ -179,9 +190,10 @@ public:
 * OrdersList class
 * Contains a Player's list of orders
 */
-class OrdersList {
+class OrdersList : public Subject, public ILoggable {
 private:
 	std::vector<Order*>* orders;
+	LogObserver* logObserver;
 public:
 	//--Constructors--//
 	// Default constructor
@@ -197,8 +209,10 @@ public:
 	// Stream insertion operator overload
 	friend std::ostream& operator<<(std::ostream& os, const OrdersList& obj);
 
-	//--Getter--//
+	//--Getters--//
+	LogObserver& getLogObserver();
 	const std::vector<Order*>& getOrders() const;
+	const LogObserver& getLogObserver() const;
 
 	//--Mutators--//
 	// Add order to player's OrdersList
@@ -207,6 +221,11 @@ public:
 	void remove(int index);
 	// Moves an order to a specific index of orders
 	void move(int source, int destination);
+	// Set the LogObserver pointer
+	void setLogObserver(LogObserver* logObserver);
+
+	// Logs order description of the last order
+	virtual std::string stringToLog() const override;
 };
 
 #endif

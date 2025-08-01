@@ -132,6 +132,8 @@
     <ClCompile Include="src\CommandProcessingDriver.cpp" />
     <ClCompile Include="src\GameEngine.cpp" />
     <ClCompile Include="src\GameEngineDriver.cpp" />
+    <ClCompile Include="src\LoggingObserver.cpp" />
+    <ClCompile Include="src\LoggingObserverDriver.cpp" />
     <ClCompile Include="src\MainDriver.cpp" />
     <ClCompile Include="src\Map.cpp" />
     <ClCompile Include="src\Orders.cpp" />
@@ -142,6 +144,7 @@
     <ClInclude Include="src\Cards.h" />
     <ClInclude Include="src\CommandProcessing.h" />
     <ClInclude Include="src\GameEngine.h" />
+    <ClInclude Include="src\LoggingObserver.h" />
     <ClInclude Include="src\Map.h" />
     <ClInclude Include="src\Orders.h" />
     <ClInclude Include="src\Player.h" />

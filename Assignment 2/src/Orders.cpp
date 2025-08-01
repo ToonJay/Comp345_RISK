@@ -36,15 +36,24 @@ Order& Order::operator=(const Order& rhs) {
 	return *this;
 }
 
+const std::string& Order::getOrderDescription() const {
+	return *orderDescription;
+}
+
 // Stream insertion operator overload
 std::ostream& operator<<(std::ostream& os, const Order& obj) {
 	os << "Description:" << std::endl;
 	os << *obj.orderDescription << std::endl;
-	if (obj.orderEffect->compare("No effect.") != 0) {
+	if (*obj.orderEffect != "No effect.") {
 		os << "Effect:" << std::endl;
 		os << *obj.orderEffect << std::endl;
 	}
 	return os;
+}
+
+// Logs order's effect
+std::string Order::stringToLog() const {
+	return *orderEffect;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -94,6 +103,7 @@ void Deploy::execute(GameEngine& game, Player& player) {
 		player.getPlayerTerritories().find(*target)->second->addUnits(*numOfUnits);
 		*orderEffect = std::to_string(*numOfUnits) + " army units have been deployed to " + *target + ".";
 	}
+	notify(*this);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -199,6 +209,7 @@ void Advance::execute(GameEngine& game, Player& player) {
 				+ "\nDefending Territory: " + *target + " - Owner: " + targetTerritory.getOwner() + " - Units: " + std::to_string(targetTerritory.getNumOfUnits()) + ".";
 		}
 	}
+	notify(*this);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -272,6 +283,7 @@ void Bomb::execute(GameEngine& game, Player& player) {
 			+ "\nBombing Result:\nTerritory: " + *target + " - Owner : " + targetTerritory.getOwner() 
 			+ " - Units : " + std::to_string(targetTerritory.getNumOfUnits()) + ".";
 	}
+	notify(*this);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -326,6 +338,7 @@ void Blockade::execute(GameEngine& game, Player& player) {
 		player.removeTerritory(&targetTerritory);
 		*orderEffect = "A blockade as been added on " + *target;
 	}
+	notify(*this);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -391,6 +404,7 @@ void Airlift::execute(GameEngine& game, Player& player) {
 		targetTerritory.addUnits(*numOfUnits);
 		*orderEffect = std::to_string(*numOfUnits) + " units were moved from " + *source + " to " + *target + ".";
 	}
+	notify(*this);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -440,6 +454,7 @@ void Negotiate::execute(GameEngine& game, Player& player) {
 		game.getDiplomacyMap().emplace(player.getPlayerName(), *target);
 		*orderEffect = player.getPlayerName() + " has negotiated a temporary truce with " + *target + " (both players cannot attack eachother until the next turn).";
 	}
+	notify(*this);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -448,13 +463,14 @@ void Negotiate::execute(GameEngine& game, Player& player) {
 
 // Default constructor
 OrdersList::OrdersList() 
-	: orders{new std::vector<Order*>} {
+	: orders{new std::vector<Order*>}, logObserver{nullptr} {
 	//std::cout << "Called OrdersList default constructor" << std::endl;
 }
 
 // Copy constructor
 OrdersList::OrdersList(const OrdersList& source) 
-	: orders{new std::vector<Order*>} {
+	: orders{new std::vector<Order*>}, logObserver{nullptr} {
+	setLogObserver(source.logObserver);
 	for (const Order* order : *source.orders) {
 		orders->push_back(order->clone()); // Deep copy
 	}
@@ -482,6 +498,7 @@ OrdersList& OrdersList::operator=(const OrdersList& rhs) {
 		for (const Order* order : *rhs.orders) {
 			orders->push_back(order->clone());
 		}
+		setLogObserver(rhs.logObserver);
 	}
 	return *this;
 }
@@ -490,19 +507,30 @@ OrdersList& OrdersList::operator=(const OrdersList& rhs) {
 std::ostream& operator<<(std::ostream& os, const OrdersList& obj) {
 	os << "Orders:" << std::endl;
 	for (const Order* o : obj.getOrders()) {
-		std::cout << *o << std::endl;
+		os << *o << std::endl;
 	}
 	return os;
 }
 
-// Getter
+// Getters
+LogObserver& OrdersList::getLogObserver() {
+	return *logObserver;
+}
+
 const std::vector<Order*>& OrdersList::getOrders() const {
 	return *orders;
 }
 
+const LogObserver& OrdersList::getLogObserver() const {
+	return *logObserver;
+}
+
+// Mutators
 // Add order to player's OrdersList
 void OrdersList::addOrder(Order* order) {
 	orders->emplace_back(order);
+	orders->back()->attach(*logObserver);
+	notify(*this);
 }
 
 // Remove order pointer and delete the pointed to object
@@ -522,4 +550,14 @@ void OrdersList::move(int source, int destination) {
 			orders->insert(orders->begin() + destination, o);
 		}
 	}
+}
+
+void OrdersList::setLogObserver(LogObserver* logObserver) {
+	this->logObserver = logObserver;
+	attach(*logObserver);
+}
+
+// Logs order description of the last order
+std::string OrdersList::stringToLog() const {
+	return orders->back()->getOrderDescription();
 }

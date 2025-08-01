@@ -4,6 +4,7 @@
 #include <string>
 #include <list>
 #include <fstream>
+#include "LoggingObserver.h"
 
 enum class GameState;
 
@@ -11,7 +12,7 @@ enum class GameState;
 * Command class
 * Stores a command and its effect as strings
 */
-class Command {
+class Command : public Subject, public ILoggable {
 private:
 	std::string* command;
 	std::string* effect;
@@ -36,15 +37,19 @@ public:
 
 	// Store effect of an executed command as a string
 	void saveEffect(const std::string& effect);
+
+	// Logs command effect
+	virtual std::string stringToLog() const override;
 };
 
 /*
 * CommandProcessor class
 * Class used to create, store and validate console commands.
 */
-class CommandProcessor {
+class CommandProcessor : public Subject, public ILoggable {
 private:
 	std::list<Command>* commandList;
+	LogObserver* logObserver;
 	// read command from console and store into a string
 	virtual void readCommand();
 protected:
@@ -54,6 +59,8 @@ public:
 	//--Constructors--//
 	// Default constructor
 	CommandProcessor();
+	// Parameterized constructor
+	CommandProcessor(LogObserver* logObserver);
 	// Copy constructor
 	CommandProcessor(const CommandProcessor& source);
 	// Destructor
@@ -65,8 +72,13 @@ public:
 	// Stream insertion operator overload
 	friend std::ostream& operator<<(std::ostream& os, const CommandProcessor& obj);
 
-	//--Getter--//
+	//--Getters--//
 	const std::list<Command>& getCommandList() const;
+	LogObserver& getLogObserver();
+	const LogObserver& getLogObserver() const;
+
+	//--Setter--//
+	void setLogObserver(LogObserver* logObserver);
 
 	// Creates, stores and returns Command object
 	Command& getCommand();
@@ -75,6 +87,8 @@ public:
 
 	// Validates whether or not a command is valid during the current game state
 	bool validate(Command& command, GameState& gameState) const;
+	// Logs last command's description
+	virtual std::string stringToLog() const override;
 };
 
 /*
@@ -126,7 +140,7 @@ private:
 public:
 	//--Constructors--//
 	// Parameterized constructor
-	FileCommandProcessorAdapter(std::string file);
+	FileCommandProcessorAdapter(std::string file, LogObserver* logObserver);
 	// Copy constructor
 	FileCommandProcessorAdapter(const FileCommandProcessorAdapter& source);
 	// Destructor

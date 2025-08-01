@@ -55,6 +55,12 @@ const std::string& Command::getEffect() const {
 // Assign a string reference parameter to the object's effect data member
 void Command::saveEffect(const std::string& effect) {
 	*this->effect = effect;
+	notify(*this);
+}
+
+// Logs command effect
+std::string Command::stringToLog() const {
+	return *effect;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -71,17 +77,26 @@ void CommandProcessor::readCommand() {
 // Stores command inside a list of Command objects
 void CommandProcessor::saveCommand(const std::string& command) {
 	commandList->emplace_back(command);
+	commandList->back().attach(*logObserver);
+	notify(*this);
 }
 
 // Default constructor
 CommandProcessor::CommandProcessor()
-	: commandList{new std::list<Command>} {
+	: commandList{new std::list<Command>}, logObserver{nullptr} {
 	//std::cout << "Called CommandProcessor default constructor" << std::endl;
+}
+
+// Parameterized constructor
+CommandProcessor::CommandProcessor(LogObserver* logObserver)
+	: commandList{new std::list<Command>}, logObserver{nullptr} {
+	setLogObserver(logObserver);
 }
 
 // Copy constructor
 CommandProcessor::CommandProcessor(const CommandProcessor& source) 
-	: commandList{new std::list<Command>{*source.commandList}} {
+	: commandList{new std::list<Command>{*source.commandList}}, logObserver{nullptr} {
+	setLogObserver(source.logObserver);
 	//std::cout << "Called CommandProcessor copy constructor" << std::endl;
 }
 
@@ -94,7 +109,9 @@ CommandProcessor::~CommandProcessor() {
 // Copy assignment operator overload
 CommandProcessor& CommandProcessor::operator=(const CommandProcessor& rhs) {
 	if (this != &rhs) {
+		delete commandList;
 		*commandList = *rhs.commandList;
+		setLogObserver(rhs.logObserver);
 	}
 	return *this;
 }
@@ -108,9 +125,23 @@ std::ostream& operator<<(std::ostream& os, const CommandProcessor& obj) {
 	return os;
 }
 
-// Getter
+// Getters
+LogObserver& CommandProcessor::getLogObserver() {
+	return *logObserver;
+}
+
 const std::list<Command>& CommandProcessor::getCommandList() const {
 	return *commandList;
+}
+
+const LogObserver& CommandProcessor::getLogObserver() const {
+	return *logObserver;
+}
+
+// Setter
+void CommandProcessor::setLogObserver(LogObserver* logObserver) {
+	this->logObserver = logObserver;
+	attach(*logObserver);
 }
 
 // Creates, stores and returns a Command object
@@ -207,6 +238,11 @@ bool CommandProcessor::validate(Command& command, GameState& gameState) const {
 	}
 }
 
+// Logs last command's description
+std::string CommandProcessor::stringToLog() const {
+	return commandList->back().getCommand();
+}
+
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // FileLineReader class function definitions
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -250,8 +286,6 @@ std::ostream& operator<<(std::ostream& os, const FileLineReader& obj) {
 	return os;
 }
 
-
-
 // Getters
 std::ifstream& FileLineReader::getFile() {
 	return *file;
@@ -289,14 +323,15 @@ void FileCommandProcessorAdapter::readCommand() {
 }
 
 // Parameterized constructor
-FileCommandProcessorAdapter::FileCommandProcessorAdapter(std::string file) 
-	: flr{new FileLineReader{file}} {
+FileCommandProcessorAdapter::FileCommandProcessorAdapter(std::string file, LogObserver* logObserver)
+	: CommandProcessor{logObserver}, flr {new FileLineReader{file}
+} {
 	// //std::cout << "Called FileCommandProcessorAdapter parameterized constructor" << std::endl;
 }
 
 // Copy constructor
 FileCommandProcessorAdapter::FileCommandProcessorAdapter(const FileCommandProcessorAdapter& source) 
-	: flr{new FileLineReader{*source.flr}} {
+	: CommandProcessor{source}, flr {new FileLineReader{*source.flr}} {
 	// //std::cout << "Called FileCommandProcessorAdapter copy constructor" << std::endl;
 }
 
@@ -309,6 +344,7 @@ FileCommandProcessorAdapter::~FileCommandProcessorAdapter() {
 // Copy assignment operator overload
 FileCommandProcessorAdapter& FileCommandProcessorAdapter::operator=(const FileCommandProcessorAdapter& rhs) {
 	if (this != &rhs) {
+		CommandProcessor::operator=(rhs);
 		*flr = *rhs.flr;
 	}
 	return *this;

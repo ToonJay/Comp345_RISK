@@ -6,8 +6,10 @@
 
 // Default constructor
 GameEngine::GameEngine()
-	: gameState{new GameState{GameState::Start}}, cmdProcessor{new CommandProcessor}, deck{new Deck}, playersList{new std::vector<Player>},
-	playerLookup{new std::unordered_map<std::string, Player*>},	diplomacyMap{new std::unordered_map<std::string, std::string>} {
+	: gameState{new GameState{GameState::Start}}, cmdProcessor{nullptr}, mapLoader{nullptr}, deck {new Deck}, playersList{new std::vector<Player>},
+	playerLookup{new std::unordered_map<std::string, Player*>}, diplomacyMap{new std::unordered_map<std::string, std::string>}, logObserver{new LogObserver} {
+	attach(*logObserver);
+	cmdProcessor = new CommandProcessor{logObserver};
 	// //std::cout << "Called GameEngine default constructor" << std::endl;
 }
 
@@ -15,7 +17,9 @@ GameEngine::GameEngine()
 GameEngine::GameEngine(const GameEngine& source)
 	: gameState{new GameState{*source.gameState}}, cmdProcessor{new CommandProcessor{*source.cmdProcessor}},
 	mapLoader{new MapLoader{*source.mapLoader}}, deck{new Deck{*source.deck}}, playersList{new std::vector<Player>{*source.playersList}},
-	playerLookup{new std::unordered_map<std::string, Player*>{*source.playerLookup}}, diplomacyMap{new std::unordered_map<std::string, std::string>{*source.diplomacyMap}} {
+	playerLookup{new std::unordered_map<std::string, Player*>{*source.playerLookup}}, 
+	diplomacyMap{new std::unordered_map<std::string, std::string>{*source.diplomacyMap}}, logObserver{new LogObserver{*source.logObserver}} {
+	attach(*logObserver);
 	// //std::cout << "Called GameEngine destructor" << std::endl;
 }
 
@@ -28,6 +32,7 @@ GameEngine::~GameEngine() {
 	delete playersList;
 	delete playerLookup;
 	delete diplomacyMap;
+	delete logObserver;
 }
 
 // Assignment operator overload
@@ -40,6 +45,7 @@ GameEngine& GameEngine::operator=(const GameEngine& rhs) {
 		delete playersList;
 		delete playerLookup;
 		delete diplomacyMap;
+		delete logObserver;
 		gameState = new GameState{*rhs.gameState};
 		cmdProcessor = new CommandProcessor{*rhs.cmdProcessor};
 		mapLoader = new MapLoader{*rhs.mapLoader};
@@ -47,23 +53,14 @@ GameEngine& GameEngine::operator=(const GameEngine& rhs) {
 		playersList = new std::vector<Player>{*rhs.playersList};
 		playerLookup = new std::unordered_map<std::string, Player*>{*rhs.playerLookup};
 		diplomacyMap = new std::unordered_map<std::string, std::string>{*rhs.diplomacyMap};
+		logObserver = new LogObserver{*rhs.logObserver};
 	}
 	return *this;
 }
 
 // Stream insertion operator overload
 std::ostream& operator<<(std::ostream& os, const GameEngine& obj) {
-	switch (obj.getGameState()) {
-	case GameState::Start: return os << "Start";
-	case GameState::Map_Loaded: return os << "Map Loaded";
-	case GameState::Map_Validated: return os << "Map Validated";
-	case GameState::Players_Added: return os << "Players Added";
-	case GameState::Assign_Reinforcement: return os << "Assign Reinforcement";
-	case GameState::Issue_Orders: return os << "Issue Orders";
-	case GameState::Execute_Orders: return os << "Execute Orders";
-	case GameState::Win: return os << "Win";
-	default: return os << "Error";
-	}
+	return os << obj.gameStateToString();
 }
 
 // Getters
@@ -89,6 +86,10 @@ Player& GameEngine::getPlayerByName(const std::string& name) {
 
 std::unordered_map<std::string, std::string>& GameEngine::getDiplomacyMap() {
 	return *diplomacyMap;
+}
+
+LogObserver& GameEngine::getLogObserver() {
+	return *logObserver;
 }
 
 const GameState& GameEngine::getGameState() const {
@@ -119,7 +120,9 @@ const std::unordered_map<std::string, std::string>& GameEngine::getDiplomacyMap(
 	return *diplomacyMap;
 }
 
-
+const LogObserver& GameEngine::getLogObserver() const {
+	return *logObserver;
+}
 
 // Transitions from one gameState to the next
 void GameEngine::transition(const Command& command) {
@@ -169,6 +172,21 @@ void GameEngine::transition(const Command& command) {
 		}
 		break;
 	}
+	notify(*this);
+}
+
+std::string GameEngine::gameStateToString() const {
+	switch (*gameState) {
+	case GameState::Start: return "Start";
+	case GameState::Map_Loaded: return "Map Loaded";
+	case GameState::Map_Validated: return "Map Validated";
+	case GameState::Players_Added: return "Players Added";
+	case GameState::Assign_Reinforcement: return "Assign Reinforcement";
+	case GameState::Issue_Orders: return "Issue Orders";
+	case GameState::Execute_Orders: return "Execute Orders";
+	case GameState::Win: return "Win";
+	default: return "Error";
+	}
 }
 
 // Where the mapLoader is loaded and validated; where the players are added; and where territory distribution is done.
@@ -188,12 +206,12 @@ void GameEngine::startupPhase() {
 			std::string fileName;
 			iss >> fileName;
 			delete cmdProcessor;
-			cmdProcessor = new FileCommandProcessorAdapter{fileName};
+			cmdProcessor = new FileCommandProcessorAdapter{fileName, logObserver};
 			if (dynamic_cast<FileCommandProcessorAdapter*>(cmdProcessor)->getFileLineReader().getFile()) {
 				isValid = true;
 			} else {
 				delete cmdProcessor;
-				cmdProcessor = new CommandProcessor;
+				cmdProcessor = new CommandProcessor{logObserver};
 				std::cout << "Invalid file name, please try again." << std::endl;
 			}
 		} else if (cmdString == "console") {
@@ -235,7 +253,7 @@ void GameEngine::startupPhase() {
 				std::getline(iss, cmdString);
 				cmdString.erase(0, 1);
 				if (playersList->size() < 6) {
-					playersList->emplace_back(Player{cmdString});
+					playersList->emplace_back(Player{cmdString, logObserver});
 					cmd.saveEffect("Player \"" + cmdString + "\" added.");
 					transition(cmd);
 				} else {
@@ -278,7 +296,7 @@ void GameEngine::startupPhase() {
 			std::cout << std::endl << cmd << std::endl;
 		}
 	}
-	cmdProcessor = new CommandProcessor;
+	cmdProcessor = new CommandProcessor{logObserver};
 }
 
 // The main game loop.
@@ -432,4 +450,8 @@ void GameEngine::executeOrdersPhase() {
 			transition(cmd);
 		}
 	}	
+}
+
+std::string GameEngine::stringToLog() const {
+	return gameStateToString();
 }

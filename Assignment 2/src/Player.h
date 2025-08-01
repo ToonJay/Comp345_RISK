@@ -12,6 +12,7 @@ class OrdersList;
 class CommandProcessor;
 class Map;
 class Deck;
+class LogObserver;
 
 /*
 * Player class
@@ -30,7 +31,7 @@ public:
 	// Default constructor
 	Player();
 	// parameterized constructor
-	Player(std::string playerName);
+	Player(std::string playerName, LogObserver* logObserver);
 	// Copy constructor
 	Player(const Player& source);
 	// Destructor constructor

@@ -16,9 +16,10 @@ Player::Player()
 }
 
 // Parameterized constructor, only the playerName gets a value, the rest only get allocated memory
-Player::Player(std::string playerName) 
+Player::Player(std::string playerName, LogObserver* logObserver) 
 	: playerName{new std::string{playerName}}, reinforcementPool{new int}, playerTerritories {new std::unordered_map<std::string, Territory*>}, playerHand{new Hand}, 
 	playerOrdersList{new OrdersList}, drawCard{new bool{false}} {
+	playerOrdersList->setLogObserver(logObserver);
 	//std::cout << "Called Player parameterized constructor" << std::endl;
 }
 
