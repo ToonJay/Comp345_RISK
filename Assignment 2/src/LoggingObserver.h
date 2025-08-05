@@ -1,5 +1,5 @@
-#ifndef LOGGING_OBSERVER_H
-#define LOGGING_OBSERVER_H
+#ifndef _LOGGINGOBSERVER_H
+#define _LOGGINGOBSERVER_H
 
 #include <string>
 #include <vector>
@@ -17,6 +17,7 @@
 */
 class ILoggable {
 public:
+    // Return string to write to log
     virtual std::string stringToLog() const = 0;
     virtual ~ILoggable() = default;
 };
@@ -40,8 +41,11 @@ private:
 public:
     virtual ~Subject() = default;
 
+    // Attach observer to subject
     void attach(Observer& observer);
+    // Detach observer from subject
     void detach(Observer& observer);
+    // Notify observer of change to loggable object
     void notify(const ILoggable& loggable);
 };
 
@@ -50,6 +54,7 @@ public:
 */
 class LogObserver : public Observer {
 public:
+    // Update the observer
     void update(const ILoggable& loggable) override;
 };
 

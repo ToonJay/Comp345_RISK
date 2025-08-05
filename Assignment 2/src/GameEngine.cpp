@@ -274,7 +274,7 @@ void GameEngine::startupPhase() {
 					int count{0};
 					for (const auto& territory : mapLoader->getMap().getGameMap()) {
 						if (count < numOfPlayerTerritories) {
-							playersList->at(territoryDistribution.at(count)).addTerritory(territory.first);
+							playersList->at(territoryDistribution.at(count)).addTerritory(territory.first->getName());
 							territory.first->setOwner(playersList->at(territoryDistribution.at(count)).getPlayerName());
 							count++;
 						} else {

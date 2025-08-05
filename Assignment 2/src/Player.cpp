@@ -10,14 +10,14 @@
 
 // Default constructor, allocates memory, but doesn't assign values
 Player::Player() 
-	: playerName{new std::string}, reinforcementPool{new int}, playerTerritories {new std::unordered_map<std::string, Territory*>}, playerHand{new Hand}, 
+	: playerName{new std::string}, reinforcementPool{new int}, playerTerritories {new std::unordered_set<std::string>}, playerHand{new Hand}, 
 	playerOrdersList{new OrdersList}, drawCard{new bool{false}} {
 	//std::cout << "Called Player default constructor" << std::endl;
 }
 
 // Parameterized constructor, only the playerName gets a value, the rest only get allocated memory
 Player::Player(std::string playerName, LogObserver* logObserver) 
-	: playerName{new std::string{playerName}}, reinforcementPool{new int}, playerTerritories {new std::unordered_map<std::string, Territory*>}, playerHand{new Hand}, 
+	: playerName{new std::string{playerName}}, reinforcementPool{new int}, playerTerritories {new std::unordered_set<std::string>}, playerHand{new Hand}, 
 	playerOrdersList{new OrdersList}, drawCard{new bool{false}} {
 	playerOrdersList->setLogObserver(logObserver);
 	//std::cout << "Called Player parameterized constructor" << std::endl;
@@ -26,7 +26,7 @@ Player::Player(std::string playerName, LogObserver* logObserver)
 // Copy constructor
 Player::Player(const Player& source) 
 	: playerName{new std::string{*source.playerName}}, reinforcementPool{new int{*source.reinforcementPool}}, 
-	playerTerritories{new std::unordered_map<std::string, Territory*>{*source.playerTerritories}}, playerHand{new Hand{*source.playerHand}}, 
+	playerTerritories{new std::unordered_set<std::string>{*source.playerTerritories}}, playerHand{new Hand{*source.playerHand}}, 
 	playerOrdersList{new OrdersList{*source.playerOrdersList}}, drawCard{new bool{*source.drawCard}} {
 	//std::cout << "Called Player copy constructor" << std::endl;
 }
@@ -53,7 +53,7 @@ Player& Player::operator=(const Player& rhs) {
 		delete drawCard;
 		playerName = new std::string{*rhs.playerName};
 		reinforcementPool = new int{*rhs.reinforcementPool};
-		playerTerritories = new std::unordered_map<std::string, Territory*>{*rhs.playerTerritories};
+		playerTerritories = new std::unordered_set<std::string>{*rhs.playerTerritories};
 		playerHand = new Hand{*rhs.playerHand};
 		playerOrdersList = new OrdersList{*rhs.playerOrdersList};
 		drawCard = new bool{*rhs.drawCard};
@@ -87,7 +87,7 @@ const int& Player::getReinforcementPool() const {
 	return *reinforcementPool;
 }
 
-const std::unordered_map<std::string, Territory*>& Player::getPlayerTerritories() const {
+const std::unordered_set<std::string>& Player::getPlayerTerritories() const {
  	return *playerTerritories;
 }
 
@@ -119,12 +119,12 @@ void Player::sendReinforcements(int numOfUnits) {
 	}
 }
 
-void Player::addTerritory(Territory* const territory) {
-	(*playerTerritories)[territory->getName()] = territory;
+void Player::addTerritory(const std::string& territory) {
+	playerTerritories->insert(territory);
 }
 
-void Player::removeTerritory(Territory* const territory) {
-	(*playerTerritories).erase(territory->getName());
+void Player::removeTerritory(const std::string& territory) {
+	playerTerritories->erase(territory);
 }
 
 // For now, returns an arbitrary list of pointers of territories to attack
@@ -348,7 +348,7 @@ std::ostream& operator<<(std::ostream& os, const Player& obj) {
 	os << "Reinforcement Pool: " << obj.getReinforcementPool() << std::endl;
 	os << "Owned Territories (" << obj.getPlayerTerritories().size() << "):" << std::endl;
 	for (const auto& t : obj.getPlayerTerritories()) {
-		os << *t.second << std::endl;
+		os << t << std::endl;
 	}
 	os << "Player's Hand: " << std::endl;
 	for (const Card* c : obj.getPlayerHand().getCards()) {

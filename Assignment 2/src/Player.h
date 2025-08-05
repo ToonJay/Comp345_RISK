@@ -22,7 +22,7 @@ class Player {
 private:
 	std::string* playerName;
 	int* reinforcementPool;
-	std::unordered_map<std::string, Territory*>* playerTerritories;
+	std::unordered_set<std::string>* playerTerritories;
 	Hand* playerHand;
 	OrdersList* playerOrdersList;
 	bool* drawCard;
@@ -51,7 +51,7 @@ public:
 	bool& getDrawCard();
 	const std::string& getPlayerName() const;
 	const int& getReinforcementPool() const;
-	const std::unordered_map<std::string, Territory*>& getPlayerTerritories() const;
+	const std::unordered_set<std::string>& getPlayerTerritories() const;
 	const Hand& getPlayerHand() const;
 	const OrdersList& getPlayerOrdersList() const;
 	const bool& getDrawCard() const;
@@ -60,8 +60,8 @@ public:
 	void setReinforcementPool(int reinforcementPool);
 	void addReinforcements(int numOfUnits);
 	void sendReinforcements(int numOfUnits);
-	void addTerritory(Territory* const territory);
-	void removeTerritory(Territory* const territory);
+	void addTerritory(const std::string& territory);
+	void removeTerritory(const std::string& territory);
 
 	// Returns list of pointers of territories to attack
 	std::unordered_set<std::string> toAttack(CommandProcessor& cmdProcessor);

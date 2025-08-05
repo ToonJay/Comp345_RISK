@@ -36,6 +36,7 @@ Order& Order::operator=(const Order& rhs) {
 	return *this;
 }
 
+// Getter
 const std::string& Order::getOrderDescription() const {
 	return *orderDescription;
 }
@@ -100,7 +101,7 @@ bool Deploy::validate(GameEngine& game, Player& player) const {
 //  First validates the order, then executes its action if it is valid, according to the order’s meaning and the player’s state
 void Deploy::execute(GameEngine& game, Player& player) {
 	if (validate(game, player)) {
-		player.getPlayerTerritories().find(*target)->second->addUnits(*numOfUnits);
+		game.getMapLoader().getMap().getTerritoryByName(*target).addUnits(*numOfUnits);
 		*orderEffect = std::to_string(*numOfUnits) + " army units have been deployed to " + *target + ".";
 	}
 	notify(*this);
@@ -194,9 +195,9 @@ void Advance::execute(GameEngine& game, Player& player) {
 
 			targetTerritory.removeUnits(deadDefenders);
 			if (targetTerritory.getNumOfUnits() == 0) {
-				game.getPlayerByName(sourceOwner).addTerritory(&targetTerritory);
+				game.getPlayerByName(sourceOwner).addTerritory(targetTerritory.getName());
 				if (targetOwner != "Neutral") {
-					game.getPlayerByName(targetOwner).removeTerritory(&targetTerritory);
+					game.getPlayerByName(targetOwner).removeTerritory(targetTerritory.getName());
 				}
 				targetTerritory.setOwner(sourceOwner);
 				targetTerritory.addUnits(*numOfUnits - deadAttackers);
@@ -335,7 +336,7 @@ void Blockade::execute(GameEngine& game, Player& player) {
 		Territory& targetTerritory{game.getMapLoader().getMap().getTerritoryByName(*target)};
 		targetTerritory.addUnits(targetTerritory.getNumOfUnits());
 		targetTerritory.setOwner("Neutral");
-		player.removeTerritory(&targetTerritory);
+		player.removeTerritory(targetTerritory.getName());
 		*orderEffect = "A blockade as been added on " + *target;
 	}
 	notify(*this);
@@ -552,6 +553,7 @@ void OrdersList::move(int source, int destination) {
 	}
 }
 
+// Set log observer
 void OrdersList::setLogObserver(LogObserver* logObserver) {
 	this->logObserver = logObserver;
 	attach(*logObserver);
