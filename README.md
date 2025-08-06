@@ -1,18 +1,18 @@
 # COMP345_RISK – Risk-like Game Implementation
 
-This project is based on **COMP 345** (Advanced C++), a course from Concordia University. It’s a solo implementation of a team-based semester project that was originally completed in a past year. 
+This project is based on **COMP 345** (Advanced C++), a course from Concordia University. It’s a solo implementation of a semester project from a past year that's usually done in teams of 5.
 I am **not currently enrolled in the course**, and this assignment comes from a different semester than the one during which I took the class — meaning I had **never done this version before**.
 
 ---
 
 ## 📌 Overview
 
-The project simulates the mechanics of **Warzone**, a Risk-like strategy board game published by Hasbro. Although the original assignment spans **three phases**,
+The project simulates the mechanics of **Warzone**, a Risk-like strategy board game published by Hasbro. Although the original project is done through **3 assignments**,
 this implementation includes only **Assignments 1 and 2**, which already encompass the **complete core game mechanics**.
 
-**Assignment 3** introduces additional AI player behaviors and tournament features. However, the instructions were vague, open-ended, and difficult to interpret without access to a course instructor.
-Since the design pattern involved — the **Strategy** pattern — is a simple and easy-to-understand concept, I saw no added value in implementing Assignment 3 under unclear requirements. 
-Therefore, I opted to consider the project complete after A2, as it already provided a complete and functioning game logic system.
+**Assignment 3** introduces AI player behaviors and a tournament feature. However, the instructions were vague, open-ended, and difficult to interpret without being able to talk to a teacher/instructor.
+Additionally, the assignment is mainly about the **Strategy Design Pattern**, which is simple and easy to understand. As such, I decided not to implement Assignment 3 and to instead consider the project complete after Assignment 2,
+as it already provides a complete implementation of the game mechanics.
 
 ---
 
@@ -34,15 +34,13 @@ The following rules were enforced to align with the COMP 345 assignment guidelin
 
 ## ⚠️ Rule Exceptions & Design Notes
 
-I made the following **intentional deviations** from the constraints to preserve sound design principles:
+I made the following **exceptions** from the constraints in order to integrate better design principles:
 
 ### 🔹 LoggingObserver Classes (`LoggingObserver.h/.cpp`)
 
 - Rules **1** and **4** were **not** followed.
 - Reason: To maintain the integrity of the **Observer Design Pattern**.
-- Rationale:
-  - Deep copying or assigning `Subject` / `Observer` objects could **break observer relationships** (e.g., duplicate or dangling observers).
-  - As such, **copy and assignment operations are explicitly disallowed**.
+- Typically, this design pattern **doesn't include any of what rules 1 and 4 are asking.**
 
 ### 🔹 Order Subclasses
 
@@ -55,7 +53,7 @@ I made the following **intentional deviations** from the constraints to preserve
 - Display logic is handled by the **base `Order` class**, which logs:
   - `OrderDescription`
   - `OrderEffect`
-- Since each subclass customizes its effect string internally, additional stream output logic was unnecessary at the subclass level.
+- Since each subclass **sets its effect string internally**, additional stream output logic was unnecessary for them.
 
 ---
 
